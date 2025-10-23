@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: #ffffff;
+      color: #000000;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    h2 {
+      margin: 0 0 4px 0;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #000000;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 11px;
+      color: #333333;
+      letter-spacing: 0.005em;
+      text-transform: uppercase;
+      position: relative;
+      cursor: default;
+    }
+
+    label .label-tooltip {
+      visibility: hidden;
+      position: absolute;
+      left: 0;
+      bottom: calc(100% + 8px);
+      width: max-content;
+      background: #2d2d2d;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px 10px;
+      z-index: 99999;
+      opacity: 0;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      transition-delay: 0s;
+      font-weight: 400;
+      font-size: 10px;
+      line-height: 1.4;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      text-transform: none;
+    }
+
+    label .label-tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 15px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #2d2d2d transparent transparent transparent;
+    }
+
+    label:hover .label-tooltip {
+      visibility: visible;
+      opacity: 1;
+      transition-delay: 0.8s;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slider-wrapper {
+      flex-grow: 1;
+      position: relative;
+      height: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Custom Range Slider */
+    input[type="range"] {
+      width: 100%;
+      height: 20px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      outline: none;
+      cursor: pointer;
+      margin: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* WebKit (Chrome, Safari, Edge) */
+    input[type="range"]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(to right,
+          #18A0FB 0%,
+          #18A0FB var(--progress, 50%),
+          #E5E5E5 var(--progress, 50%),
+          #E5E5E5 100%);
+      border-radius: 2px;
+      transition: background 0.15s ease;
+    }
+
+    input[type="range"]:hover::-webkit-slider-runnable-track {
+      background: linear-gradient(to right,
+          #0D8FE8 0%,
+          #0D8FE8 var(--progress, 50%),
+          #D9D9D9 var(--progress, 50%),
+          #D9D9D9 100%);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      background: #ffffff;
+      border: 2px solid #18A0FB;
+      border-radius: 50%;
+      cursor: grab;
+      margin-top: -4px;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 2px 6px rgba(24, 160, 251, 0.3);
+      border-width: 2.5px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.1);
+      border-color: #0D7FD8;
+      box-shadow: 0 2px 8px rgba(24, 160, 251, 0.4);
+    }
+
+    /* Firefox */
+    input[type="range"]::-moz-range-track {
+      width: 100%;
+      height: 4px;
+      background: #E5E5E5;
+      border-radius: 2px;
+      border: none;
+      transition: background 0.15s ease;
+    }
+
+    input[type="range"]:hover::-moz-range-track {
+      background: #D9D9D9;
+    }
+
+    input[type="range"]::-moz-range-progress {
+      background: #18A0FB;
+      height: 4px;
+      border-radius: 2px;
+      transition: background 0.15s ease;
+    }
+
+    input[type="range"]:hover::-moz-range-progress {
+      background: #0D8FE8;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      background: #ffffff;
+      border: 2px solid #18A0FB;
+      border-radius: 50%;
+      cursor: grab;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 2px 6px rgba(24, 160, 251, 0.3);
+      border-width: 2.5px;
+    }
+
+    input[type="range"]::-moz-range-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.1);
+      border-color: #0D7FD8;
+      box-shadow: 0 2px 8px rgba(24, 160, 251, 0.4);
+    }
+
+    /* Number Input */
+    input[type="number"] {
+      width: 56px;
+      height: 28px;
+      border: 1px solid #E5E5E5;
+      border-radius: 4px;
+      padding: 0 8px;
+      font-size: 11px;
+      font-weight: 500;
+      text-align: center;
+      background: #ffffff;
+      color: #000000;
+      transition: all 0.15s ease;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+
+    /* Remove spinner arrows */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"]:hover {
+      border-color: #CCCCCC;
+    }
+
+    input[type="number"]:focus {
+      border-color: #18A0FB;
+      box-shadow: 0 0 0 1px #18A0FB;
+    }
+
+    /* Reset Button */
+    .reset-btn {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      min-height: 28px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: #999999;
+      border: 1px solid #E5E5E5;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 1;
+      transition: all 0.15s ease;
+      outline: none;
+      flex-shrink: 0;
+    }
+
+    .reset-btn:hover:not(:disabled) {
+      background: #F5F5F5;
+      color: #333333;
+      border-color: #CCCCCC;
+      transform: scale(1.05);
+    }
+
+    .reset-btn:active:not(:disabled) {
+      transform: scale(0.95);
+      background: #E5E5E5;
+    }
+
+    .reset-btn:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+      border-color: #F0F0F0;
+    }
+
+    /* Action Buttons */
+    .buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    button {
+      flex: 1;
+      height: 32px;
+      border-radius: 6px;
+      padding: 0 16px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      outline: none;
+      letter-spacing: 0.01em;
+    }
+
+    .secondary {
+      background: #F5F5F5;
+      color: #333333;
+      border: 1px solid #E5E5E5;
+    }
+
+    .secondary:hover {
+      background: #E5E5E5;
+      border-color: #CCCCCC;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .secondary:active {
+      transform: translateY(0);
+      box-shadow: none;
+      background: #D9D9D9;
+    }
+
+    .primary {
+      background: #18A0FB;
+      color: #ffffff;
+      box-shadow: 0 1px 2px rgba(24, 160, 251, 0.2);
+    }
+
+    .primary:hover {
+      background: #0D8FE8;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(24, 160, 251, 0.3);
+    }
+
+    .primary:active {
+      transform: translateY(0);
+      background: #0D7FD8;
+      box-shadow: 0 1px 2px rgba(24, 160, 251, 0.2);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 8px;
+      font-size: 10px;
+      color: #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 16px;
+      border-top: 1px solid #e5e5e5;
+      position: relative;
+    }
+
+    .footer a {
+      color: #18a0fb;
+      text-decoration: none;
+      transition: color 0.2s ease;
+      font-weight: 500;
+      position: relative;
+    }
+
+    .footer a:hover {
+      color: #0d8ee0;
+      text-decoration: underline;
+    }
+
+    .footer a .link-tooltip {
+      visibility: hidden;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(100% + 10px);
+      width: max-content;
+      background: #2d2d2d;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px 10px;
+      z-index: 99999;
+      opacity: 0;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      transition-delay: 0s;
+      font-weight: 400;
+      font-size: 10px;
+      line-height: 1.4;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .footer a .link-tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px;
+      border-style: solid;
+      border-color: #2d2d2d transparent transparent transparent;
+    }
+
+    .footer a:hover .link-tooltip {
+      visibility: visible;
+      opacity: 1;
+      transition-delay: 0.8s;
+    }
+
+    .support-button {
+      position: absolute;
+      right: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      overflow: visible;
+    }
+
+    .support-button svg {
+      width: 15px;
+      height: 15px;
+      fill: #999;
+      transition: all 0.2s ease;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .support-button:hover {
+      width: 24px;
+      height: 24px;
+      right: 0;
+    }
+
+    .support-button:hover svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .support-button .icon-default {
+      opacity: 1;
+    }
+
+    .support-button .icon-hover {
+      opacity: 0;
+    }
+
+    .support-button:hover .icon-default {
+      opacity: 0;
+    }
+
+    .support-button:hover .icon-hover {
+      opacity: 1;
+    }
+
+    .support-button:hover {
+      background: #f0f0f0;
+      fill: #18a0fb;
+    }
+
+    .support-button:active {
+      background: #e5e5e5;
+      transform: scale(0.95);
+    }
+
+    .support-button .support-tooltip {
+      visibility: hidden;
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 10px);
+      width: max-content;
+      background: #2d2d2d;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px 10px;
+      z-index: 99999;
+      opacity: 0;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      transition-delay: 0s;
+      font-weight: 400;
+      font-size: 10px;
+      line-height: 1.4;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .support-button .support-tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      right: 10px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #2d2d2d transparent transparent transparent;
+    }
+
+    .support-button:hover .support-tooltip {
+      visibility: visible;
+      opacity: 1;
+      transition-delay: 0.8s;
+    }
+
+    /* Smooth animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .container {
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    /* Modern Figma-style theme overrides */
+    :root {
+      --bg: #ffffff;
+      --text: #111111;
+      --muted: #666666;
+      --border: #E6E6E6;
+      --accent: #0D99FF;
+      --radius: 8px;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      --focus: 0 0 0 2px rgba(13, 153, 255, 0.35);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1F1F1F;
+        --text: #F5F5F5;
+        --muted: #B3B3B3;
+        --border: #2A2A2A;
+        --accent: #0D99FF;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        --focus: 0 0 0 2px rgba(13, 153, 255, 0.5);
+      }
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+    }
+
+    .container {
+      gap: 16px;
+    }
+
+    h2 {
+      margin: 0 0 8px 0;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .slider-container {
+      gap: 12px;
+    }
+
+    input[type="number"] {
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: var(--focus);
+    }
+
+    .reset-btn {
+      border-color: var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .reset-btn:hover:not(:disabled) {
+      background: rgba(0, 0, 0, 0.04);
+      color: var(--text);
+      border-color: var(--border);
+      transform: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .reset-btn:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .reset-btn:active:not(:disabled) {
+        background: rgba(255, 255, 255, 0.15);
+      }
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      background: linear-gradient(to right,
+          var(--accent) 0%,
+          var(--accent) var(--progress, 50%),
+          var(--border) var(--progress, 50%),
+          var(--border) 100%);
+    }
+
+    input[type="range"]:hover::-webkit-slider-runnable-track {
+      background: linear-gradient(to right,
+          var(--accent) 0%,
+          var(--accent) var(--progress, 50%),
+          var(--border) var(--progress, 50%),
+          var(--border) 100%);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      background: var(--bg);
+      border: 2px solid var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    input[type="range"]::-moz-range-track {
+      background: var(--border);
+    }
+
+    input[type="range"]::-moz-range-progress {
+      background: var(--accent);
+    }
+
+    .buttons button {
+      border-radius: var(--radius);
+      font-size: 12px;
+    }
+
+    .secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .secondary:hover {
+      background: rgba(0, 0, 0, 0.04);
+      border-color: var(--border);
+      box-shadow: none;
+      transform: none;
+    }
+
+    .secondary:active {
+      background: rgba(0, 0, 0, 0.08);
+      transform: none;
+      box-shadow: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .secondary:active {
+        background: rgba(255, 255, 255, 0.15);
+      }
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .primary:hover {
+      background: #0788E3;
+      transform: none;
+      box-shadow: 0 2px 6px rgba(13, 153, 255, 0.25);
+    }
+
+    .primary:focus {
+      box-shadow: var(--focus);
+    }
+
+    .primary:active {
+      background: #0679CC;
+      transform: none;
+      box-shadow: var(--shadow);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .primary:hover {
+        background: #1AA7FF;
+        box-shadow: 0 2px 8px rgba(13, 153, 255, 0.4);
+      }
+
+      .primary:active {
+        background: #0788E3;
+      }
+    }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--accent);
+    }
+
+    .support-button svg {
+      fill: var(--muted);
+    }
+
+    .support-button:hover svg {
+      fill: var(--accent);
+    }
+
+    .support-button:hover {
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .support-button:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Skew Objects</h2>
+
+    <div class="field">
+      <label for="skewX">Horizontal Skew (X)<span class="label-tooltip">Skews the object horizontally along the X-axis</span></label>
+      <div class="slider-container">
+        <input type="range" id="skewXSlider" class="slider" min="-45" max="45" value="0" step="0.1">
+        <input type="number" id="skewX" value="0" min="-45" max="45" step="0.1">
+        <button class="reset-btn" id="resetXBtn" title="Reset X">✕</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="skewY">Vertical Skew (Y)<span class="label-tooltip">Skews the object vertically along the Y-axis</span></label>
+      <div class="slider-container">
+        <input type="range" id="skewYSlider" class="slider" min="-45" max="45" value="0" step="0.1">
+        <input type="number" id="skewY" value="0" min="-45" max="45" step="0.1">
+        <button class="reset-btn" id="resetYBtn" title="Reset Y">✕</button>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="secondary" id="cancelBtn">Cancel</button>
+      <button class="primary" id="applyBtn">OK</button>
+    </div>
+
+    <div class="footer">
+      <span>© 2025 <a href="https://samolevsky.com/" target="_blank">Samolevsky.com<span class="link-tooltip">Discover more design tools</span></a></span>
+      <button class="support-button" id="supportButton">
+        <svg class="icon-default" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+          <path d="M16,2A14,14,0,1,0,30,16,14,14,0,0,0,16,2Zm0,26A12,12,0,1,1,28,16,12,12,0,0,1,16,28Z" />
+          <path d="M11.5,11A2.5,2.5,0,1,0,14,13.5,2.48,2.48,0,0,0,11.5,11Z" />
+          <path d="M20.5,11A2.5,2.5,0,1,0,23,13.5,2.48,2.48,0,0,0,20.5,11Z" />
+          <path d="M16,24a8,8,0,0,0,6.85-3.89l-1.71-1a6,6,0,0,1-10.28,0l-1.71,1A8,8,0,0,0,16,24Z" />
+        </svg>
+        <svg class="icon-hover" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+          <path d="M16,2A14,14,0,1,0,30,16,14,14,0,0,0,16,2Zm0,26A12,12,0,1,1,28,16,12,12,0,0,1,16,28Z" />
+          <path d="M20.5,11A2.5,2.5,0,1,0,23,13.5,2.5,2.5,0,0,0,20.5,11Z" />
+          <rect x="8" y="13" width="6" height="2" />
+          <path d="M16,24a8,8,0,0,0,6.85-3.89l-1.71-1a6,6,0,0,1-10.28,0l-1.71,1A8,8,0,0,0,16,24Z" />
+        </svg>
+        <span class="support-tooltip">Support plugin development</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Listen for messages from plugin
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (msg.type === 'init-values') {
+        // Set initial values from current selection
+        document.getElementById('skewX').value = msg.skewX;
+        document.getElementById('skewY').value = msg.skewY;
+        document.getElementById('skewXSlider').value = msg.skewX;
+        document.getElementById('skewYSlider').value = msg.skewY;
+        updateResetButtons();
+        updateSliderProgress(document.getElementById('skewXSlider'));
+        updateSliderProgress(document.getElementById('skewYSlider'));
+      }
+    };
+
+    // Initialize slider progress on load
+    window.addEventListener('DOMContentLoaded', () => {
+      updateSliderProgress(document.getElementById('skewXSlider'));
+      updateSliderProgress(document.getElementById('skewYSlider'));
+    });
+
+    // Initialize plugin - store original transforms
+    parent.postMessage({
+      pluginMessage: {
+        type: 'init'
+      }
+    }, '*');
+
+    // Function to update slider progress
+    function updateSliderProgress(slider) {
+      const min = parseFloat(slider.min);
+      const max = parseFloat(slider.max);
+      const value = parseFloat(slider.value);
+      const percentage = ((value - min) / (max - min)) * 100;
+      slider.style.setProperty('--progress', percentage + '%');
+    }
+
+    // Function to apply skew in real-time
+    function applySkew() {
+      const skewX = parseFloat(document.getElementById('skewX').value);
+      const skewY = parseFloat(document.getElementById('skewY').value);
+
+      parent.postMessage({
+        pluginMessage: {
+          type: 'skew',
+          skewX: skewX,
+          skewY: skewY
+        }
+      }, '*');
+
+      // Update reset button states
+      updateResetButtons();
+
+      // Update slider progress
+      updateSliderProgress(document.getElementById('skewXSlider'));
+      updateSliderProgress(document.getElementById('skewYSlider'));
+    }
+
+    // Function to update reset button states
+    function updateResetButtons() {
+      const skewX = parseFloat(document.getElementById('skewX').value);
+      const skewY = parseFloat(document.getElementById('skewY').value);
+
+      document.getElementById('resetXBtn').disabled = (skewX === 0);
+      document.getElementById('resetYBtn').disabled = (skewY === 0);
+    }
+
+    // Function to reset slider values
+    function resetSlider(sliderId, inputId) {
+      document.getElementById(sliderId).value = 0;
+      document.getElementById(inputId).value = 0;
+      applySkew();
+    }
+
+    // Right-click to reset X slider
+    document.getElementById('skewXSlider').oncontextmenu = function (e) {
+      e.preventDefault();
+      resetSlider('skewXSlider', 'skewX');
+      return false;
+    };
+
+    document.getElementById('skewX').oncontextmenu = function (e) {
+      e.preventDefault();
+      resetSlider('skewXSlider', 'skewX');
+      return false;
+    };
+
+    // Right-click to reset Y slider
+    document.getElementById('skewYSlider').oncontextmenu = function (e) {
+      e.preventDefault();
+      resetSlider('skewYSlider', 'skewY');
+      return false;
+    };
+
+    document.getElementById('skewY').oncontextmenu = function (e) {
+      e.preventDefault();
+      resetSlider('skewYSlider', 'skewY');
+      return false;
+    };
+
+    // Sync slider and number input for X with real-time update
+    document.getElementById('skewXSlider').oninput = function () {
+      document.getElementById('skewX').value = this.value;
+      applySkew();
+    };
+
+    document.getElementById('skewX').oninput = function () {
+      document.getElementById('skewXSlider').value = this.value;
+      applySkew();
+    };
+
+    // Sync slider and number input for Y with real-time update
+    document.getElementById('skewYSlider').oninput = function () {
+      document.getElementById('skewY').value = this.value;
+      applySkew();
+    };
+
+    document.getElementById('skewY').oninput = function () {
+      document.getElementById('skewYSlider').value = this.value;
+      applySkew();
+    };
+
+    // Reset X button
+    document.getElementById('resetXBtn').onclick = () => {
+      resetSlider('skewXSlider', 'skewX');
+    };
+
+    // Reset Y button
+    document.getElementById('resetYBtn').onclick = () => {
+      resetSlider('skewYSlider', 'skewY');
+    };
+
+    // Apply button - confirm and close
+    document.getElementById('applyBtn').onclick = () => {
+      parent.postMessage({
+        pluginMessage: {
+          type: 'apply'
+        }
+      }, '*');
+    };
+
+    // Cancel button - revert to original and close
+    document.getElementById('cancelBtn').onclick = () => {
+      parent.postMessage({
+        pluginMessage: {
+          type: 'cancel'
+        }
+      }, '*');
+    };
+
+    // Support button - open in browser
+    document.getElementById('supportButton').onclick = () => {
+      parent.postMessage({
+        pluginMessage: {
+          type: 'open-url',
+          url: 'https://www.patreon.com/samolevsky'
+        }
+      }, '*');
+    };
+  </script>
+</body>
+
+</html>
