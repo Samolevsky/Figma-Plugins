@@ -3,131 +3,383 @@
     box-sizing: border-box;
   }
 
-  html, body {
-    height: auto;
-    min-height: 0;
+  :root {
+    /* Use Figma's theme colors when available, fallback to light mode */
+    --bg-primary: var(--figma-color-bg, #ffffff);
+    --bg-secondary: var(--figma-color-bg-secondary, #fafafa);
+    --bg-hover: var(--figma-color-bg-hover, #f0f0f0);
+    --bg-active: var(--figma-color-bg-pressed, #e5e5e5);
+    --text-primary: var(--figma-color-text, #1a1a1a);
+    --text-secondary: var(--figma-color-text-secondary, #666);
+    --text-tertiary: var(--figma-color-text-tertiary, #999);
+    --border-primary: var(--figma-color-border, #e0e0e0);
+    --border-secondary: var(--figma-color-border, rgba(0, 0, 0, 0.1));
+    --track-bg: var(--figma-color-bg-secondary, #e8e8e8);
+    --track-hover: var(--figma-color-bg-hover, #d8d8d8);
+    --tooltip-bg: var(--figma-color-bg-inverse, #2d2d2d);
+    --tooltip-text: var(--figma-color-text-oninverse, #fff);
+    --accent-primary: var(--figma-color-bg-brand, #18a0fb);
+    --accent-hover: var(--figma-color-bg-brand-hover, #0d8ce8);
+    --button-secondary-bg: var(--figma-color-bg-secondary, #f5f5f5);
+    --button-secondary-text: var(--figma-color-text-secondary, #666);
+    --button-secondary-hover-bg: var(--figma-color-bg-hover, #e8e8e8);
+    --button-secondary-hover-text: var(--figma-color-text, #333);
   }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 20px;
     margin: 0;
-    background: var(--figma-color-bg);
-    color: var(--figma-color-text);
-    font-size: 11px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  .container {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-height: 0;
-  }
-
-  .header {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
   }
 
   h2 {
+    margin: 0 0 24px 0;
     font-size: 13px;
     font-weight: 600;
-    margin: 0;
-    color: var(--figma-color-text);
     letter-spacing: -0.01em;
+    color: var(--text-primary);
   }
 
-  .description {
+  .slider-group {
+    margin-bottom: 18px;
+    position: relative;
+  }
+
+  label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-size: 11px;
-    color: var(--figma-color-text-secondary);
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    position: relative;
+    cursor: help;
+  }
+
+  label .label-text {
+    position: relative;
+  }
+
+  label .label-tooltip {
+    visibility: hidden;
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 8px);
+    width: 220px;
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    text-align: left;
+    border-radius: 6px;
+    padding: 10px 12px;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    transition-delay: 0s;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 1.5;
+    pointer-events: none;
+    white-space: normal;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    text-transform: none;
+  }
+
+  label .label-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 12px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: var(--tooltip-bg) transparent transparent transparent;
+  }
+
+  label:hover .label-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0.8s;
+  }
+
+  .slider-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .slider-wrapper {
+    flex: 1;
+    position: relative;
+    height: 32px;
+    display: flex;
+    align-items: center;
+  }
+
+  .slider-track {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background: var(--track-bg);
+    border-radius: 2px;
+    pointer-events: none;
+    transition: background 0.2s ease;
+  }
+
+  .slider-progress {
+    position: absolute;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover));
+    border-radius: 2px;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    opacity: 0;
+  }
+
+  input[type="range"] {
+    position: relative;
+    width: 100%;
+    height: 32px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--accent-primary);
+    border-radius: 50%;
+    cursor: grab;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 0 0 0 rgba(24, 160, 251, 0.3);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(24, 160, 251, 0.1);
+  }
+
+  input[type="range"]:active::-webkit-slider-thumb {
+    cursor: grabbing;
+    transform: scale(1.05);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 0 0 6px rgba(24, 160, 251, 0.15);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--accent-primary);
+    border-radius: 50%;
+    cursor: grab;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 0 0 0 rgba(24, 160, 251, 0.3);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(24, 160, 251, 0.1);
+  }
+
+  input[type="range"]:active::-moz-range-thumb {
+    cursor: grabbing;
+    transform: scale(1.05);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 0 0 6px rgba(24, 160, 251, 0.15);
+  }
+
+  .slider-wrapper:hover .slider-track {
+    background: var(--track-hover);
+  }
+
+  .slider-wrapper:hover .slider-progress {
+    opacity: 1;
+  }
+
+  input[type="range"]:focus-visible {
+    outline: none;
+  }
+
+  input[type="range"]:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(24, 160, 251, 0.2);
+  }
+
+  input[type="range"]:focus-visible::-moz-range-thumb {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(24, 160, 251, 0.2);
+  }
+
+  .value-display {
+    min-width: 48px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-primary);
+    padding: 6px 8px;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    background: var(--bg-secondary);
+    transition: all 0.2s ease;
+  }
+
+  .value-display:hover {
+    border-color: var(--border-primary);
+    background: var(--bg-primary);
+  }
+
+  .value-display:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    background: var(--bg-primary);
+    box-shadow: 0 0 0 3px rgba(24, 160, 251, 0.1);
+  }
+
+  .reset-button {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    max-width: 24px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    flex-grow: 0;
+  }
+
+  .reset-button:not(:disabled):hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-primary);
+  }
+
+  .reset-button:not(:disabled):active {
+    background: var(--bg-active);
+    transform: scale(0.95);
+  }
+
+  .reset-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: var(--border-secondary);
+  }
+
+  .reset-button svg {
+    width: 12px;
+    height: 12px;
+    fill: var(--text-secondary);
+    transition: fill 0.2s ease;
+  }
+
+  .reset-button:not(:disabled):hover svg {
+    fill: var(--accent-primary);
+  }
+
+  .reset-button:disabled svg {
+    fill: var(--text-tertiary);
+  }
+
+  .preview-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 8px 0;
+  }
+
+  .preview-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .preview-checkbox input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    accent-color: var(--accent-primary);
+  }
+
+  .preview-checkbox label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
     margin: 0;
-    line-height: 1.4;
+    text-transform: none;
+    letter-spacing: 0;
   }
 
   .button-group {
     display: flex;
     gap: 8px;
+    margin-top: 12px;
+    padding-top: 4px;
   }
 
   button {
     flex: 1;
-    padding: 8px 12px;
+    padding: 10px 16px;
     font-size: 11px;
-    font-weight: 500;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    font-family: inherit;
-    position: relative;
-    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.01em;
   }
 
-  button::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.4s, height 0.4s;
-  }
-
-  button:active::before {
-    width: 300px;
-    height: 300px;
-  }
-
-  button:active {
-    transform: scale(0.97);
-  }
-
-  #delete {
-    background: linear-gradient(135deg, #f24822 0%, #e03616 100%);
+  #apply {
+    background: var(--accent-primary);
     color: white;
-    box-shadow: 0 1px 2px rgba(242, 72, 34, 0.15);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   }
 
-  #delete:hover {
-    background: linear-gradient(135deg, #e03616 0%, #d02e10 100%);
-    box-shadow: 0 2px 4px rgba(242, 72, 34, 0.2);
+  #apply:hover {
+    background: var(--accent-hover);
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(24, 160, 251, 0.3);
   }
 
-  #makeVisible {
-    background: linear-gradient(135deg, #18a0fb 0%, #0d8ee0 100%);
-    color: white;
-    box-shadow: 0 1px 2px rgba(24, 160, 251, 0.15);
+  #apply:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   }
 
-  #makeVisible:hover {
-    background: linear-gradient(135deg, #0d8ee0 0%, #0880d1 100%);
-    box-shadow: 0 2px 4px rgba(24, 160, 251, 0.2);
+  #cancel {
+    background: var(--button-secondary-bg);
+    color: var(--button-secondary-text);
+  }
+
+  #cancel:hover {
+    background: var(--button-secondary-hover-bg);
+    color: var(--button-secondary-hover-text);
     transform: translateY(-1px);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   }
 
-  #result {
-    padding: 10px 12px;
-    border-radius: 6px;
-    font-size: 11px;
-    line-height: 1.4;
-    display: none;
-    animation: slideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    margin: 0;
+  #cancel:active {
+    transform: translateY(0);
+    box-shadow: none;
   }
 
-  @keyframes slideIn {
+  @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateY(-8px);
+      transform: translateY(4px);
     }
 
     to {
@@ -136,172 +388,28 @@
     }
   }
 
-  #result.show {
-    display: block;
-    background: linear-gradient(135deg, #e8f5e9 0%, #d4edd6 100%);
-    color: #2e7d32;
-    border: 1px solid #a5d6a7;
+  .slider-group {
+    animation: fadeIn 0.3s ease forwards;
   }
 
-  #result.success {
-    display: block;
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    color: #1565c0;
-    border: 1px solid #64b5f6;
-    font-weight: 500;
+  .slider-group:nth-child(2) {
+    animation-delay: 0.05s;
   }
 
-  #result.warning {
-    display: block;
-    background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-    color: #f57c00;
-    border: 1px solid #ffd54f;
+  .slider-group:nth-child(3) {
+    animation-delay: 0.1s;
   }
 
-  #hiddenList {
-    max-height: 400px;
-    overflow-y: auto;
-    border: 1px solid var(--figma-color-border);
-    border-radius: 8px;
-    padding: 8px;
-    display: none;
-    background: var(--figma-color-bg-secondary);
-    margin: 0;
-  }
-
-  #hiddenList.show {
-    display: block;
-    animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-
-    to {
-      opacity: 1;
-    }
-  }
-
-  #hiddenList::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  #hiddenList::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  #hiddenList::-webkit-scrollbar-thumb {
-    background: var(--figma-color-border-strong);
-    border-radius: 4px;
-  }
-
-  #hiddenList::-webkit-scrollbar-thumb:hover {
-    background: var(--figma-color-text-tertiary);
-  }
-
-  .list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    padding: 0 4px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--figma-color-text);
-  }
-
-  .list-count {
-    background: var(--figma-color-bg);
-    color: var(--figma-color-text-secondary);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 10px;
-    font-weight: 600;
-    min-width: 24px;
-    text-align: center;
-    border: 1px solid var(--figma-color-border);
-  }
-
-  .hidden-item {
-    padding: 8px 10px;
-    margin: 4px 0;
-    background: var(--figma-color-bg);
-    border: 1px solid var(--figma-color-border);
-    border-radius: 6px;
-    font-size: 11px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    user-select: none;
-  }
-
-  .hidden-item:hover {
-    background: var(--figma-color-bg-hover);
-    border-color: var(--figma-color-border-strong);
-    transform: translateX(2px);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-
-  .hidden-item:active {
-    transform: scale(0.98);
-  }
-
-  .hidden-item.skipped {
-    opacity: 0.5;
-    background: var(--figma-color-bg-secondary);
-    border-color: var(--figma-color-border);
-    border-style: dashed;
-  }
-
-  .hidden-item.skipped:hover {
-    opacity: 0.7;
-    background: var(--figma-color-bg-hover);
-  }
-
-  .hidden-item-name {
-    font-weight: 500;
-    flex: 1;
-    pointer-events: none;
-    color: var(--figma-color-text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .hidden-item-icon {
-    width: 16px;
-    height: 16px;
-    margin-left: 8px;
-    flex-shrink: 0;
-    pointer-events: none;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .hidden-item:hover .hidden-item-icon {
-    transform: scale(1.1);
-  }
-
-  .hidden-item-icon svg {
-    pointer-events: none;
-    fill: var(--figma-color-text-secondary);
-    transition: fill 0.15s ease;
-  }
-
-  .hidden-item.skipped .hidden-item-icon svg {
-    fill: var(--figma-color-text-tertiary);
+  .slider-group:nth-child(4) {
+    animation-delay: 0.15s;
   }
 
   .footer {
-    margin-top: 8px;
-    padding-top: 12px;
-    border-top: 1px solid var(--figma-color-border);
-    text-align: center;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-secondary);
     font-size: 10px;
-    color: var(--figma-color-text-tertiary);
+    color: var(--text-tertiary);
     position: relative;
     display: flex;
     align-items: center;
@@ -309,328 +417,480 @@
   }
 
   .footer a {
-    color: #18a0fb;
+    color: var(--accent-primary);
     text-decoration: none;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
+    position: relative;
   }
 
   .footer a:hover {
-    color: #0d8ee0;
+    color: var(--accent-hover);
     text-decoration: underline;
+  }
+
+
+
+  .footer a .link-tooltip {
+    visibility: hidden;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(100% + 10px);
+    width: max-content;
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 10px;
+    z-index: 99999;
+    opacity: 0;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    transition-delay: 0s;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 1.4;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .footer a .link-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--tooltip-bg) transparent transparent transparent;
+  }
+
+  .footer a:hover .link-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0.8s;
   }
 
   .support-button {
     position: absolute;
     right: 0;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--figma-color-bg-secondary);
-    border: 1px solid var(--figma-color-border);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 0;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    overflow: visible;
+    transform: scale(0.833);
+    transform-origin: center;
   }
 
   .support-button:hover {
-    background: #18a0fb;
-    border-color: #18a0fb;
-    transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(24, 160, 251, 0.3);
+    transform: scale(1);
   }
 
-  .support-button:active {
-    transform: scale(0.95);
+  .support-button svg {
+    width: 18px;
+    height: 18px;
+    fill: var(--text-tertiary);
+    transition: all 0.2s ease;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
-  .support-icon {
-    width: 16px;
-    height: 16px;
+  .support-button .icon-default {
+    opacity: 1;
     transition: opacity 0.2s ease;
   }
 
-  .support-icon svg {
-    width: 100%;
-    height: 100%;
-    fill: var(--figma-color-text-secondary);
-    transition: fill 0.2s ease;
+  .support-button .icon-hover {
+    opacity: 0;
+    transition: opacity 0.2s ease;
   }
 
-  .support-button:hover .support-icon svg {
-    fill: #ffffff;
+  .support-button:hover {
+    background: var(--bg-hover);
   }
 
-  .support-icon-default {
-    position: absolute;
-    opacity: 1;
-  }
-
-  .support-icon-hover {
-    position: absolute;
+  .support-button:hover .icon-default {
     opacity: 0;
   }
 
-  .support-button:hover .support-icon-default {
-    opacity: 0;
-  }
-
-  .support-button:hover .support-icon-hover {
+  .support-button:hover .icon-hover {
     opacity: 1;
   }
 
-  .empty-state {
+  .support-button:hover svg {
+    fill: var(--accent-primary);
+  }
+
+  .support-button:active {
+    background: var(--bg-active);
+  }
+
+  .support-button .support-tooltip {
+    visibility: hidden;
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 10px);
+    width: max-content;
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
     text-align: center;
-    padding: 32px 16px;
-    color: var(--figma-color-text-tertiary);
+    border-radius: 6px;
+    padding: 8px 10px;
+    z-index: 99999;
+    opacity: 0;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    transition-delay: 0s;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 1.4;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
 
-  .empty-state-icon {
-    font-size: 32px;
-    margin-bottom: 8px;
-    opacity: 0.5;
+  .support-button .support-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    right: 10px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--tooltip-bg) transparent transparent transparent;
+  }
+
+  .support-button:hover .support-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0.8s;
   }
 </style>
 
-<div class="container">
-  <div class="header">
-    <h2>Manage Hidden Layers</h2>
-    <p class="description">Choose an action for all hidden items within your current selection.</p>
-  </div>
+<h2>HSL Color Adjustment</h2>
 
-  <div id="hiddenList" class="show">
-    <div class="list-header"><strong>Hidden items found:</strong><span class="list-count">7</span></div>
-    <div class="hidden-item" data-id="item1" data-skipped="false">
-      <span class="hidden-item-name">Hidden Layer 1</span>
-      <span class="hidden-item-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.94,15.66A16.69,16.69,0,0,0,16,5,16.69,16.69,0,0,0,1.06,15.66a1,1,0,0,0,0,.68A16.69,16.69,0,0,0,16,27,16.69,16.69,0,0,0,30.94,16.34,1,1,0,0,0,30.94,15.66ZM16,25c-5.3,0-10.9-3.93-12.93-9C5.1,10.93,10.7,7,16,7s10.9,3.93,12.93,9C26.9,21.07,21.3,25,16,25Z"/><path d="M16,10a6,6,0,1,0,6,6A6,6,0,0,0,16,10Zm0,10a4,4,0,1,1,4-4A4,4,0,0,1,16,20Z"/></svg></span>
-    </div>
-    <div class="hidden-item" data-id="item2" data-skipped="false">
-      <span class="hidden-item-name">Hidden Layer 2</span>
-      <span class="hidden-item-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.94,15.66A16.69,16.69,0,0,0,16,5,16.69,16.69,0,0,0,1.06,15.66a1,1,0,0,0,0,.68A16.69,16.69,0,0,0,16,27,16.69,16.69,0,0,0,30.94,16.34,1,1,0,0,0,30.94,15.66ZM16,25c-5.3,0-10.9-3.93-12.93-9C5.1,10.93,10.7,7,16,7s10.9,3.93,12.93,9C26.9,21.07,21.3,25,16,25Z"/><path d="M16,10a6,6,0,1,0,6,6A6,6,0,0,0,16,10Zm0,10a4,4,0,1,1,4-4A4,4,0,0,1,16,20Z"/></svg></span>
-    </div>
-    <div class="hidden-item" data-id="item3" data-skipped="false">
-      <span class="hidden-item-name">Hidden Layer 3</span>
-      <span class="hidden-item-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.94,15.66A16.69,16.69,0,0,0,16,5,16.69,16.69,0,0,0,1.06,15.66a1,1,0,0,0,0,.68A16.69,16.69,0,0,0,16,27,16.69,16.69,0,0,0,30.94,16.34,1,1,0,0,0,30.94,15.66ZM16,25c-5.3,0-10.9-3.93-12.93-9C5.1,10.93,10.7,7,16,7s10.9,3.93,12.93,9C26.9,21.07,21.3,25,16,25Z"/><path d="M16,10a6,6,0,1,0,6,6A6,6,0,0,0,16,10Zm0,10a4,4,0,1,1,4-4A4,4,0,0,1,16,20Z"/></svg></span>
-    </div>
-    <div class="hidden-item" data-id="item4" data-skipped="false">
-      <span class="hidden-item-name">Hidden Layer 4</span>
-      <span class="hidden-item-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.94,15.66A16.69,16.69,0,0,0,16,5,16.69,16.69,0,0,0,1.06,15.66a1,1,0,0,0,0,.68A16.69,16.69,0,0,0,16,27,16.69,16.69,0,0,0,30.94,16.34,1,1,0,0,0,30.94,15.66ZM16,25c-5.3,0-10.9-3.93-12.93-9C5.1,10.93,10.7,7,16,7s10.9,3.93,12.93,9C26.9,21.07,21.3,25,16,25Z"/><path d="M16,10a6,6,0,1,0,6,6A6,6,0,0,0,16,10Zm0,10a4,4,0,1,1,4-4A4,4,0,0,1,16,20Z"/></svg></span>
-    </div>
-    <div class="hidden-item" data-id="item5" data-skipped="false">
-      <span class="hidden-item-name">Hidden Layer 5</span>
-      <span class="hidden-item-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.94,15.66A16.69,16.69,0,0,0,16,5,16.69,16.69,0,0,0,1.06,15.66a1,1,0,0,0,0,.68A16.69,16.69,0,0,0,16,27,16.69,16.69,0,0,0,30.94,16.34,1,1,0,0,0,30.94,15.66ZM16,25c-5.3,0-10.9-3.93-12.93-9C5.1,10.93,10.7,7,16,7s10.9,3.93,12.93,9C26.9,21.07,21.3,25,16,25Z"/><path d="M16,10a6,6,0,1,0,6,6A6,6,0,0,0,16,10Zm0,10a4,4,0,1,1,4-4A4,4,0,0,1,16,20Z"/></svg></span>
-    </div>
-    <div class="hidden-item" data-id="item6" data-skipped="false">
-      <span class="hidden-item-name">Hidden Layer 6</span>
-      <span class="hidden-item-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.94,15.66A16.69,16.69,0,0,0,16,5,16.69,16.69,0,0,0,1.06,15.66a1,1,0,0,0,0,.68A16.69,16.69,0,0,0,16,27,16.69,16.69,0,0,0,30.94,16.34,1,1,0,0,0,30.94,15.66ZM16,25c-5.3,0-10.9-3.93-12.93-9C5.1,10.93,10.7,7,16,7s10.9,3.93,12.93,9C26.9,21.07,21.3,25,16,25Z"/><path d="M16,10a6,6,0,1,0,6,6A6,6,0,0,0,16,10Zm0,10a4,4,0,1,1,4-4A4,4,0,0,1,16,20Z"/></svg></span>
-    </div>
-    <div class="hidden-item" data-id="item7" data-skipped="false">
-      <span class="hidden-item-name">Hidden Layer 7</span>
-      <span class="hidden-item-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.94,15.66A16.69,16.69,0,0,0,16,5,16.69,16.69,0,0,0,1.06,15.66a1,1,0,0,0,0,.68A16.69,16.69,0,0,0,16,27,16.69,16.69,0,0,0,30.94,16.34,1,1,0,0,0,30.94,15.66ZM16,25c-5.3,0-10.9-3.93-12.93-9C5.1,10.93,10.7,7,16,7s10.9,3.93,12.93,9C26.9,21.07,21.3,25,16,25Z"/><path d="M16,10a6,6,0,1,0,6,6A6,6,0,0,0,16,10Zm0,10a4,4,0,1,1,4-4A4,4,0,0,1,16,20Z"/></svg></span>
-    </div>
-  </div>
-  <div id="result"></div>
-
-  <div class="button-group">
-    <button id="delete">Delete Hidden Layers</button>
-    <button id="makeVisible">Make Visible</button>
-  </div>
-
-  <div class="footer">
-    <span title="Discover more design tools">© 2025 <a href="https://samolevsky.com/" target="_blank">Samolevsky.com</a></span>
-    <button class="support-button" id="supportButton" title="Support plugin development">
-      <span class="support-icon support-icon-default">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M16,2A14,14,0,1,0,30,16,14,14,0,0,0,16,2Zm0,26A12,12,0,1,1,28,16,12,12,0,0,1,16,28Z"/><path d="M11.5,11A2.5,2.5,0,1,0,14,13.5,2.48,2.48,0,0,0,11.5,11Z"/><path d="M20.5,11A2.5,2.5,0,1,0,23,13.5,2.48,2.48,0,0,0,20.5,11Z"/><path d="M16,24a8,8,0,0,0,6.85-3.89l-1.71-1a6,6,0,0,1-10.28,0l-1.71,1A8,8,0,0,0,16,24Z"/></svg>
+<div class="slider-group">
+  <label for="hue">
+    <span class="label-text">Hue
+      <span class="label-tooltip">
+        Shifts the color around the color wheel. Positive values shift clockwise, negative values shift
+        counterclockwise.
       </span>
-      <span class="support-icon support-icon-hover">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M16,2A14,14,0,1,0,30,16,14,14,0,0,0,16,2Zm0,26A12,12,0,1,1,28,16,12,12,0,0,1,16,28Z"/><path d="M20.5,11A2.5,2.5,0,1,0,23,13.5,2.5,2.5,0,0,0,20.5,11Z"/><rect x="8" y="13" width="6" height="2"/><path d="M16,24a8,8,0,0,0,6.85-3.89l-1.71-1a6,6,0,0,1-10.28,0l-1.71,1A8,8,0,0,0,16,24Z"/></svg>
-      </span>
+    </span>
+  </label>
+  <div class="slider-container">
+    <div class="slider-wrapper">
+      <div class="slider-track"></div>
+      <div class="slider-progress" id="hue-progress"></div>
+      <input type="range" id="hue" min="-180" max="180" value="0" step="1">
+    </div>
+    <input type="number" class="value-display" id="hue-value" value="0" min="-180" max="180" step="1">
+    <button class="reset-button" id="hue-reset" disabled>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path
+          d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
+      </svg>
     </button>
   </div>
 </div>
 
+<div class="slider-group">
+  <label for="saturation">
+    <span class="label-text">Saturation
+      <span class="label-tooltip">
+        Adjusts color intensity. Positive values make colors more vibrant, negative values make them more gray.
+      </span>
+    </span>
+  </label>
+  <div class="slider-container">
+    <div class="slider-wrapper">
+      <div class="slider-track"></div>
+      <div class="slider-progress" id="saturation-progress"></div>
+      <input type="range" id="saturation" min="-100" max="100" value="0" step="1">
+    </div>
+    <input type="number" class="value-display" id="saturation-value" value="0" min="-100" max="100" step="1">
+    <button class="reset-button" id="saturation-reset" disabled>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path
+          d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div class="slider-group">
+  <label for="lightness">
+    <span class="label-text">Lightness
+      <span class="label-tooltip">
+        Adjusts brightness. Positive values make colors lighter, negative values make them darker.
+      </span>
+    </span>
+  </label>
+  <div class="slider-container">
+    <div class="slider-wrapper">
+      <div class="slider-track"></div>
+      <div class="slider-progress" id="lightness-progress"></div>
+      <input type="range" id="lightness" min="-100" max="100" value="0" step="1">
+    </div>
+    <input type="number" class="value-display" id="lightness-value" value="0" min="-100" max="100" step="1">
+    <button class="reset-button" id="lightness-reset" disabled>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path
+          d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div class="preview-container">
+  <div class="preview-checkbox">
+    <input type="checkbox" id="preview-toggle" checked>
+    <label for="preview-toggle">Preview</label>
+  </div>
+</div>
+
+<div class="button-group">
+  <button id="cancel">Cancel</button>
+  <button id="apply">Apply</button>
+</div>
+
+<div class="footer">
+  <span>© 2025 <a href="https://samolevsky.com/" target="_blank">Samolevsky.com<span class="link-tooltip">Discover more
+        design tools</span></a></span>
+  <button class="support-button" id="supportButton">
+    <svg class="icon-default" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <path d="M16,2A14,14,0,1,0,30,16,14,14,0,0,0,16,2Zm0,26A12,12,0,1,1,28,16,12,12,0,0,1,16,28Z" />
+      <path d="M11.5,11A2.5,2.5,0,1,0,14,13.5,2.48,2.48,0,0,0,11.5,11Z" />
+      <path d="M20.5,11A2.5,2.5,0,1,0,23,13.5,2.48,2.48,0,0,0,20.5,11Z" />
+      <path d="M16,24a8,8,0,0,0,6.85-3.89l-1.71-1a6,6,0,0,1-10.28,0l-1.71,1A8,8,0,0,0,16,24Z" />
+    </svg>
+    <svg class="icon-hover" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <path d="M16,2A14,14,0,1,0,30,16,14,14,0,0,0,16,2Zm0,26A12,12,0,1,1,28,16,12,12,0,0,1,16,28Z" />
+      <path d="M20.5,11A2.5,2.5,0,1,0,23,13.5,2.5,2.5,0,0,0,20.5,11Z" />
+      <rect x="8" y="13" width="6" height="2" />
+      <path d="M16,24a8,8,0,0,0,6.85-3.89l-1.71-1a6,6,0,0,1-10.28,0l-1.71,1A8,8,0,0,0,16,24Z" />
+    </svg>
+    <span class="support-tooltip">Support plugin development</span>
+  </button>
+</div>
+
 <script>
-  const visibleIconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M30.94,15.66A16.69,16.69,0,0,0,16,5,16.69,16.69,0,0,0,1.06,15.66a1,1,0,0,0,0,.68A16.69,16.69,0,0,0,16,27,16.69,16.69,0,0,0,30.94,16.34,1,1,0,0,0,30.94,15.66ZM16,25c-5.3,0-10.9-3.93-12.93-9C5.1,10.93,10.7,7,16,7s10.9,3.93,12.93,9C26.9,21.07,21.3,25,16,25Z"/><path d="M16,10a6,6,0,1,0,6,6A6,6,0,0,0,16,10Zm0,10a4,4,0,1,1,4-4A4,4,0,0,1,16,20Z"/></svg>';
-  const hiddenIconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M5.24,22.51l1.43-1.42A14.06,14.06,0,0,1,3.07,16C5.1,10.93,10.7,7,16,7a12.38,12.38,0,0,1,4,.72l1.55-1.56A14.72,14.72,0,0,0,16,5,16.69,16.69,0,0,0,1.06,15.66a1,1,0,0,0,0,.68A16,16,0,0,0,5.24,22.51Z"/><path d="M12,15.73a4,4,0,0,1,3.7-3.7l1.81-1.82a6,6,0,0,0-7.33,7.33Z"/><path d="M30.94,15.66A16.4,16.4,0,0,0,25.2,8.22L30,3.41,28.59,2,2,28.59,3.41,30l5.1-5.1A15.29,15.29,0,0,0,16,27,16.69,16.69,0,0,0,30.94,16.34,1,1,0,0,0,30.94,15.66ZM20,16a4,4,0,0,1-6,3.44L19.44,14A4,4,0,0,1,20,16Zm-4,9a13.05,13.05,0,0,1-6-1.58l2.54-2.54a6,6,0,0,0,8.35-8.35l2.87-2.87A14.54,14.54,0,0,1,28.93,16C26.9,21.07,21.3,25,16,25Z"/></svg>';
-  const skippedItems = new Set();
+  const hueSlider = document.getElementById('hue');
+  const saturationSlider = document.getElementById('saturation');
+  const lightnessSlider = document.getElementById('lightness');
 
-  document.getElementById('delete').onclick = () => {
-    parent.postMessage({
-      pluginMessage: {
-        type: 'delete-hidden',
-        skippedIds: Array.from(skippedItems)
-      }
-    }, '*')
-  }
+  const hueValue = document.getElementById('hue-value');
+  const saturationValue = document.getElementById('saturation-value');
+  const lightnessValue = document.getElementById('lightness-value');
 
-  document.getElementById('makeVisible').onclick = () => {
-    parent.postMessage({
-      pluginMessage: {
-        type: 'make-visible',
-        skippedIds: Array.from(skippedItems)
-      }
-    }, '*')
-  }
+  const hueProgress = document.getElementById('hue-progress');
+  const saturationProgress = document.getElementById('saturation-progress');
+  const lightnessProgress = document.getElementById('lightness-progress');
 
-  document.getElementById('supportButton').onclick = () => {
-    parent.postMessage({
-      pluginMessage: {
-        type: 'open-url',
-        url: 'https://www.patreon.com/c/samolevsky'
-      }
-    }, '*')
-  }
+  const hueReset = document.getElementById('hue-reset');
+  const saturationReset = document.getElementById('saturation-reset');
+  const lightnessReset = document.getElementById('lightness-reset');
 
-  window.onmessage = (event) => {
-    const msg = event.data.pluginMessage;
+  const previewToggle = document.getElementById('preview-toggle');
 
-    if (msg.type === 'hidden-list') {
-      const listDiv = document.getElementById('hiddenList');
-      const resultDiv = document.getElementById('result');
-      skippedItems.clear();
+  function updateProgress(slider, progress, min, max) {
+    const value = parseFloat(slider.value);
+    const range = max - min;
+    const centerPercent = Math.abs(min) / range * 100;
+    const valuePercent = (value - min) / range * 100;
 
-      if (msg.items.length === 0) {
-        resultDiv.textContent = 'No hidden items found in the selection.';
-        resultDiv.className = 'warning';
-        listDiv.classList.remove('show');
-        listDiv.style.maxHeight = '';
-        resizeWindow();
-      } else {
-        listDiv.innerHTML = '<div class="list-header"><strong>Hidden items found:</strong><span class="list-count">' + msg.items.length + '</span></div>';
-        msg.items.forEach(item => {
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'hidden-item';
-          itemDiv.dataset.id = item.id;
-          itemDiv.dataset.skipped = 'false';
-
-          const nameSpan = document.createElement('span');
-          nameSpan.className = 'hidden-item-name';
-          nameSpan.textContent = item.name;
-
-          const iconContainer = document.createElement('span');
-          iconContainer.className = 'hidden-item-icon';
-          iconContainer.innerHTML = visibleIconSvg;
-
-          itemDiv.appendChild(nameSpan);
-          itemDiv.appendChild(iconContainer);
-
-          itemDiv.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const isSkipped = this.dataset.skipped === 'true';
-
-            if (isSkipped) {
-              skippedItems.delete(item.id);
-              this.dataset.skipped = 'false';
-              iconContainer.innerHTML = visibleIconSvg;
-              this.classList.remove('skipped');
-            } else {
-              skippedItems.add(item.id);
-              this.dataset.skipped = 'true';
-              iconContainer.innerHTML = hiddenIconSvg;
-              this.classList.add('skipped');
-            }
-          });
-
-          listDiv.appendChild(itemDiv);
-        });
-        
-        // Adjust listbox height based on available space to keep footer visible
-        updateListMaxHeight();
-        
-        listDiv.classList.add('show');
-        resultDiv.classList.remove('show', 'warning');
-        
-        // Resize plugin window to fit content
-        resizeWindow();
-      }
-    }
-
-    if (msg.type === 'result') {
-      const resultDiv = document.getElementById('result');
-      resultDiv.textContent = msg.message;
-      resultDiv.className = msg.success ? 'success' : 'show';
-      resizeWindow();
-    }
-  }
-
-  function calculateHeight() {
-    // Get all the elements
-    const container = document.querySelector('.container');
-    const hiddenList = document.getElementById('hiddenList');
-    
-    // Check if the list is scrollable (has items that overflow)
-    const isListScrollable = hiddenList && 
-                            hiddenList.classList.contains('show') && 
-                            hiddenList.scrollHeight > hiddenList.clientHeight;
-    
-    if (isListScrollable) {
-      // When list is scrollable, use container's offsetHeight (actual rendered height)
-      // This respects the max-height constraint on the list
-      return container.offsetHeight;
+    if (value >= 0) {
+      progress.style.left = centerPercent + '%';
+      progress.style.width = (valuePercent - centerPercent) + '%';
     } else {
-      // When list is not scrollable, use scrollHeight to get natural content height
-      return container.scrollHeight;
+      progress.style.left = valuePercent + '%';
+      progress.style.width = (centerPercent - valuePercent) + '%';
     }
+
+    progress.style.opacity = value !== 0 ? '1' : '0';
   }
 
-  function updateListMaxHeight() {
-    const container = document.querySelector('.container');
-    const listDiv = document.getElementById('hiddenList');
-    if (!container || !listDiv || !listDiv.classList.contains('show')) return;
-
-    const header = document.querySelector('.header');
-    const resultDiv = document.getElementById('result');
-    const buttonGroup = document.querySelector('.button-group');
-    const footer = document.querySelector('.footer');
-
-    const cs = getComputedStyle(container);
-    const rowGap = parseFloat(cs.rowGap || cs.gap || '0');
-    const paddingTop = parseFloat(cs.paddingTop || '0');
-    const paddingBottom = parseFloat(cs.paddingBottom || '0');
-
-    const children = [header, listDiv, resultDiv, buttonGroup, footer].filter(Boolean);
-    const visibleCount = children.filter(el => el && el.offsetHeight > 0).length;
-
-    const nonListHeight =
-      (header ? header.offsetHeight : 0) +
-      (resultDiv ? resultDiv.offsetHeight : 0) +
-      (buttonGroup ? buttonGroup.offsetHeight : 0) +
-      (footer ? footer.offsetHeight : 0) +
-      paddingTop + paddingBottom +
-      rowGap * Math.max(0, visibleCount - 1);
-
-    const maxWindowHeight = 600; // keep in sync with resizeWindow clamp
-    const available = Math.max(120, maxWindowHeight - nonListHeight - 2); // buffer
-    listDiv.style.maxHeight = available + 'px';
+  function updateResetButton(resetButton, value) {
+    resetButton.disabled = value === 0;
   }
 
-  function resizeWindow() {
-    // Use setTimeout to ensure layout is complete
-    setTimeout(() => {
-      updateListMaxHeight();
-      const height = calculateHeight();
-      
-      // Add buffer for safety
-      const bufferedHeight = height + 2;
-      
-      // Set reasonable bounds
-      const minHeight = 250;
-      const maxHeight = 600;
-      const newHeight = Math.max(minHeight, Math.min(bufferedHeight, maxHeight));
-      
+  function sendPreview() {
+    if (!previewToggle.checked) {
+      // If preview is off, reset to original colors
       parent.postMessage({
         pluginMessage: {
-          type: 'resize',
-          height: newHeight
+          type: 'preview',
+          hue: 0,
+          saturation: 0,
+          lightness: 0
         }
       }, '*');
-    }, 100);
+      return;
+    }
+
+    const hue = parseInt(hueSlider.value, 10);
+    const saturation = parseInt(saturationSlider.value, 10);
+    const lightness = parseInt(lightnessSlider.value, 10);
+
+    parent.postMessage({
+      pluginMessage: {
+        type: 'preview',
+        hue,
+        saturation,
+        lightness
+      }
+    }, '*');
   }
 
-  // Initial resize
-  window.addEventListener('load', resizeWindow);
+  // Handle preview toggle
+  previewToggle.onchange = () => {
+    sendPreview();
+  };
+
+  hueSlider.oninput = () => {
+    hueValue.value = hueSlider.value;
+    updateProgress(hueSlider, hueProgress, -180, 180);
+    updateResetButton(hueReset, parseInt(hueSlider.value, 10));
+    sendPreview();
+  };
+
+  saturationSlider.oninput = () => {
+    saturationValue.value = saturationSlider.value;
+    updateProgress(saturationSlider, saturationProgress, -100, 100);
+    updateResetButton(saturationReset, parseInt(saturationSlider.value, 10));
+    sendPreview();
+  };
+
+  lightnessSlider.oninput = () => {
+    lightnessValue.value = lightnessSlider.value;
+    updateProgress(lightnessSlider, lightnessProgress, -100, 100);
+    updateResetButton(lightnessReset, parseInt(lightnessSlider.value, 10));
+    sendPreview();
+  };
+
+  hueValue.oninput = () => {
+    let val = parseInt(hueValue.value, 10);
+    if (isNaN(val)) val = 0;
+    val = Math.max(-180, Math.min(180, val));
+    hueSlider.value = val.toString();
+    hueValue.value = val.toString();
+    updateProgress(hueSlider, hueProgress, -180, 180);
+    updateResetButton(hueReset, val);
+    sendPreview();
+  };
+
+  saturationValue.oninput = () => {
+    let val = parseInt(saturationValue.value, 10);
+    if (isNaN(val)) val = 0;
+    val = Math.max(-100, Math.min(100, val));
+    saturationSlider.value = val.toString();
+    saturationValue.value = val.toString();
+    updateProgress(saturationSlider, saturationProgress, -100, 100);
+    updateResetButton(saturationReset, val);
+    sendPreview();
+  };
+
+  lightnessValue.oninput = () => {
+    let val = parseInt(lightnessValue.value, 10);
+    if (isNaN(val)) val = 0;
+    val = Math.max(-100, Math.min(100, val));
+    lightnessSlider.value = val.toString();
+    lightnessValue.value = val.toString();
+    updateProgress(lightnessSlider, lightnessProgress, -100, 100);
+    updateResetButton(lightnessReset, val);
+    sendPreview();
+  };
+
+  document.getElementById('apply').onclick = () => {
+    const hue = parseInt(hueSlider.value, 10);
+    const saturation = parseInt(saturationSlider.value, 10);
+    const lightness = parseInt(lightnessSlider.value, 10);
+
+    parent.postMessage({
+      pluginMessage: {
+        type: 'apply',
+        hue,
+        saturation,
+        lightness
+      }
+    }, '*');
+  };
+
+  document.getElementById('cancel').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+  };
+
+  document.getElementById('supportButton').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'open-support' } }, '*');
+  };
+
+  // Reset button handlers
+  hueReset.onclick = () => {
+    hueSlider.value = '0';
+    hueValue.value = '0';
+    updateProgress(hueSlider, hueProgress, -180, 180);
+    updateResetButton(hueReset, 0);
+    sendPreview();
+  };
+
+  saturationReset.onclick = () => {
+    saturationSlider.value = '0';
+    saturationValue.value = '0';
+    updateProgress(saturationSlider, saturationProgress, -100, 100);
+    updateResetButton(saturationReset, 0);
+    sendPreview();
+  };
+
+  lightnessReset.onclick = () => {
+    lightnessSlider.value = '0';
+    lightnessValue.value = '0';
+    updateProgress(lightnessSlider, lightnessProgress, -100, 100);
+    updateResetButton(lightnessReset, 0);
+    sendPreview();
+  };
+
+  // Right-click to reset sliders to 0
+  hueSlider.oncontextmenu = (e) => {
+    e.preventDefault();
+    hueSlider.value = '0';
+    hueValue.value = '0';
+    updateProgress(hueSlider, hueProgress, -180, 180);
+    updateResetButton(hueReset, 0);
+    sendPreview();
+  };
+
+  saturationSlider.oncontextmenu = (e) => {
+    e.preventDefault();
+    saturationSlider.value = '0';
+    saturationValue.value = '0';
+    updateProgress(saturationSlider, saturationProgress, -100, 100);
+    updateResetButton(saturationReset, 0);
+    sendPreview();
+  };
+
+  lightnessSlider.oncontextmenu = (e) => {
+    e.preventDefault();
+    lightnessSlider.value = '0';
+    lightnessValue.value = '0';
+    updateProgress(lightnessSlider, lightnessProgress, -100, 100);
+    updateResetButton(lightnessReset, 0);
+    sendPreview();
+  };
+
+  // Initialize progress bars
+  updateProgress(hueSlider, hueProgress, -180, 180);
+  updateProgress(saturationSlider, saturationProgress, -100, 100);
+  updateProgress(lightnessSlider, lightnessProgress, -100, 100);
+
+  // Initialize
+  parent.postMessage({ pluginMessage: { type: 'init' } }, '*');
 </script>
