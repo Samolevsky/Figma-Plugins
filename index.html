@@ -1,896 +1,1400 @@
-<style>
-  * {
-    box-sizing: border-box;
-  }
+<!-- ui.html -->
+<!DOCTYPE html>
+<html>
 
-  :root {
-    /* Use Figma's theme colors when available, fallback to light mode */
-    --bg-primary: var(--figma-color-bg, #ffffff);
-    --bg-secondary: var(--figma-color-bg-secondary, #fafafa);
-    --bg-hover: var(--figma-color-bg-hover, #f0f0f0);
-    --bg-active: var(--figma-color-bg-pressed, #e5e5e5);
-    --text-primary: var(--figma-color-text, #1a1a1a);
-    --text-secondary: var(--figma-color-text-secondary, #666);
-    --text-tertiary: var(--figma-color-text-tertiary, #999);
-    --border-primary: var(--figma-color-border, #e0e0e0);
-    --border-secondary: var(--figma-color-border, rgba(0, 0, 0, 0.1));
-    --track-bg: var(--figma-color-bg-secondary, #e8e8e8);
-    --track-hover: var(--figma-color-bg-hover, #d8d8d8);
-    --tooltip-bg: var(--figma-color-bg-inverse, #2d2d2d);
-    --tooltip-text: var(--figma-color-text-oninverse, #fff);
-    --accent-primary: var(--figma-color-bg-brand, #18a0fb);
-    --accent-hover: var(--figma-color-bg-brand-hover, #0d8ce8);
-    --button-secondary-bg: var(--figma-color-bg-secondary, #f5f5f5);
-    --button-secondary-text: var(--figma-color-text-secondary, #666);
-    --button-secondary-hover-bg: var(--figma-color-bg-hover, #e8e8e8);
-    --button-secondary-hover-text: var(--figma-color-text, #333);
-  }
+<head>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    padding: 20px;
-    margin: 0;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-  }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 16px 16px 12px 16px;
+      color: #1E1E1E;
+      background: #FFFFFF;
+      font-size: 11px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  h2 {
-    margin: 0 0 24px 0;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--text-primary);
-  }
+    /* Dark mode styles */
+    body.dark-mode {
+      color: #FFFFFF;
+      background: #2C2C2C;
+    }
 
-  .slider-group {
-    margin-bottom: 18px;
-    position: relative;
-  }
+    body.dark-mode h2 {
+      color: #FFFFFF;
+    }
 
-  label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 11px;
-    font-weight: 500;
-    margin-bottom: 10px;
-    color: var(--text-secondary);
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
-    position: relative;
-    cursor: help;
-  }
+    body.dark-mode .slider-label {
+      color: #CCCCCC;
+    }
 
-  label .label-text {
-    position: relative;
-  }
+    body.dark-mode .option-label {
+      color: #CCCCCC;
+    }
 
-  label .label-tooltip {
-    visibility: hidden;
-    position: absolute;
-    left: 0;
-    bottom: calc(100% + 8px);
-    width: 220px;
-    background: var(--tooltip-bg);
-    color: var(--tooltip-text);
-    text-align: left;
-    border-radius: 6px;
-    padding: 10px 12px;
-    z-index: 10000;
-    opacity: 0;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-    transition-delay: 0s;
-    font-weight: 400;
-    font-size: 10px;
-    line-height: 1.5;
-    pointer-events: none;
-    white-space: normal;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    text-transform: none;
-  }
+    body.dark-mode .option-label:hover {
+      color: #FFFFFF;
+    }
 
-  label .label-tooltip::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 12px;
-    border-width: 6px;
-    border-style: solid;
-    border-color: var(--tooltip-bg) transparent transparent transparent;
-  }
+    body.dark-mode .percent-input {
+      background: #1E1E1E;
+      border-color: #3C3C3C;
+      color: #FFFFFF;
+    }
 
-  label:hover .label-tooltip {
-    visibility: visible;
-    opacity: 1;
-    transition-delay: 0.8s;
-  }
+    body.dark-mode .percent-input:hover {
+      border-color: #555555;
+    }
 
-  .slider-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+    body.dark-mode .percent-symbol {
+      color: #7C7C7C;
+    }
 
-  .slider-wrapper {
-    flex: 1;
-    position: relative;
-    height: 32px;
-    display: flex;
-    align-items: center;
-  }
+    body.dark-mode .checkbox-custom {
+      background: #1E1E1E;
+      border-color: #555555;
+    }
 
-  .slider-track {
-    position: absolute;
-    width: 100%;
-    height: 3px;
-    background: var(--track-bg);
-    border-radius: 2px;
-    pointer-events: none;
-    transition: background 0.2s ease;
-  }
+    body.dark-mode .checkbox-wrapper:hover .checkbox-custom {
+      border-color: #7C7C7C;
+    }
 
-  .slider-progress {
-    position: absolute;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover));
-    border-radius: 2px;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-    opacity: 0;
-  }
+    body.dark-mode input[type="range"]::-webkit-slider-runnable-track {
+      background: linear-gradient(to right, rgba(24, 160, 251, 0.35) 0%, rgba(24, 160, 251, 0.35) var(--progress), #3C3C3C var(--progress), #3C3C3C 100%);
+    }
 
-  input[type="range"] {
-    position: relative;
-    width: 100%;
-    height: 32px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: transparent;
-    outline: none;
-    cursor: pointer;
-    z-index: 2;
-  }
+    body.dark-mode input[type="range"]:hover::-webkit-slider-runnable-track {
+      background: linear-gradient(to right, rgba(13, 143, 232, 0.45) 0%, rgba(13, 143, 232, 0.45) var(--progress), #4C4C4C var(--progress), #4C4C4C 100%);
+    }
 
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    background: var(--accent-primary);
-    border-radius: 50%;
-    cursor: grab;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 0 0 0 rgba(24, 160, 251, 0.3);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+    body.dark-mode input[type="range"]::-moz-range-track {
+      background: #3C3C3C;
+    }
 
-  input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(24, 160, 251, 0.1);
-  }
+    body.dark-mode input[type="range"]:hover::-moz-range-track {
+      background: #4C4C4C;
+    }
 
-  input[type="range"]:active::-webkit-slider-thumb {
-    cursor: grabbing;
-    transform: scale(1.05);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 0 0 6px rgba(24, 160, 251, 0.15);
-  }
+    body.dark-mode input[type="range"]::-webkit-slider-thumb {
+      background: #2C2C2C;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
 
-  input[type="range"]::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    background: var(--accent-primary);
-    border-radius: 50%;
-    cursor: grab;
-    border: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 0 0 0 rgba(24, 160, 251, 0.3);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+    body.dark-mode input[type="range"]::-webkit-slider-thumb:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
 
-  input[type="range"]::-moz-range-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(24, 160, 251, 0.1);
-  }
+    body.dark-mode input[type="range"]::-moz-range-thumb {
+      background: #2C2C2C;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
 
-  input[type="range"]:active::-moz-range-thumb {
-    cursor: grabbing;
-    transform: scale(1.05);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 0 0 6px rgba(24, 160, 251, 0.15);
-  }
+    body.dark-mode input[type="range"]::-moz-range-thumb:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
 
-  .slider-wrapper:hover .slider-track {
-    background: var(--track-hover);
-  }
+    body.dark-mode .divider {
+      background: #3C3C3C;
+    }
 
-  .slider-wrapper:hover .slider-progress {
-    opacity: 1;
-  }
+    body.dark-mode .tooltip {
+      background: #3C3C3C;
+      color: #CCCCCC;
+    }
 
-  input[type="range"]:focus-visible {
-    outline: none;
-  }
+    body.dark-mode .tooltip:hover {
+      background: #4C4C4C;
+      color: #FFFFFF;
+    }
 
-  input[type="range"]:focus-visible::-webkit-slider-thumb {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(24, 160, 251, 0.2);
-  }
+    body.dark-mode .tooltip .tooltiptext {
+      background-color: #1E1E1E;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
 
-  input[type="range"]:focus-visible::-moz-range-thumb {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(24, 160, 251, 0.2);
-  }
+    body.dark-mode .tooltip .tooltiptext::after {
+      border-color: #1E1E1E transparent transparent transparent;
+    }
 
-  .value-display {
-    min-width: 48px;
-    text-align: center;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text-primary);
-    padding: 6px 8px;
-    border: 1px solid var(--border-primary);
-    border-radius: 4px;
-    background: var(--bg-secondary);
-    transition: all 0.2s ease;
-  }
+    body.dark-mode .slider-label-text::after,
+    body.dark-mode button.has-tooltip::after,
+    body.dark-mode .footer a::after {
+      background: #1E1E1E;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
 
-  .value-display:hover {
-    border-color: var(--border-primary);
-    background: var(--bg-primary);
-  }
+    body.dark-mode .slider-label-text::before,
+    body.dark-mode button.has-tooltip::before,
+    body.dark-mode .footer a::before {
+      border-color: #1E1E1E transparent transparent transparent;
+    }
 
-  .value-display:focus {
-    outline: none;
-    border-color: var(--accent-primary);
-    background: var(--bg-primary);
-    box-shadow: 0 0 0 3px rgba(24, 160, 251, 0.1);
-  }
+    body.dark-mode #cancel-btn {
+      background: #3C3C3C;
+      color: #CCCCCC;
+    }
 
-  .reset-button {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
-    max-width: 24px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: 1px solid var(--border-primary);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-    flex-grow: 0;
-  }
+    body.dark-mode #cancel-btn:hover {
+      background: #4C4C4C;
+      color: #FFFFFF;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
 
-  .reset-button:not(:disabled):hover {
-    background: var(--bg-hover);
-    border-color: var(--accent-primary);
-  }
+    body.dark-mode .footer {
+      border-top-color: #3C3C3C;
+      color: #7C7C7C;
+    }
 
-  .reset-button:not(:disabled):active {
-    background: var(--bg-active);
-    transform: scale(0.95);
-  }
+    h2 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #1E1E1E;
+      letter-spacing: -0.01em;
+    }
 
-  .reset-button:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-    border-color: var(--border-secondary);
-  }
+    .slider-container {
+      margin-bottom: 16px;
+    }
 
-  .reset-button svg {
-    width: 12px;
-    height: 12px;
-    fill: var(--text-secondary);
-    transition: fill 0.2s ease;
-  }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #333333;
+    }
 
-  .reset-button:not(:disabled):hover svg {
-    fill: var(--accent-primary);
-  }
+    .slider-label-text {
+      position: relative;
+      cursor: help;
+    }
 
-  .reset-button:disabled svg {
-    fill: var(--text-tertiary);
-  }
-
-  .preview-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-    padding: 8px 0;
-  }
-
-  .preview-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .preview-checkbox input[type="checkbox"] {
-    width: 14px;
-    height: 14px;
-    cursor: pointer;
-    accent-color: var(--accent-primary);
-  }
-
-  .preview-checkbox label {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text-primary);
-    cursor: pointer;
-    margin: 0;
-    text-transform: none;
-    letter-spacing: 0;
-  }
-
-  .button-group {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-    padding-top: 4px;
-  }
-
-  button {
-    flex: 1;
-    padding: 10px 16px;
-    font-size: 11px;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    letter-spacing: 0.01em;
-  }
-
-  #apply {
-    background: var(--accent-primary);
-    color: white;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  }
-
-  #apply:hover {
-    background: var(--accent-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(24, 160, 251, 0.3);
-  }
-
-  #apply:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  }
-
-  #cancel {
-    background: var(--button-secondary-bg);
-    color: var(--button-secondary-text);
-  }
-
-  #cancel:hover {
-    background: var(--button-secondary-hover-bg);
-    color: var(--button-secondary-hover-text);
-    transform: translateY(-1px);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  }
-
-  #cancel:active {
-    transform: translateY(0);
-    box-shadow: none;
-  }
-
-  @keyframes fadeIn {
-    from {
+    .slider-label-text::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 0;
+      bottom: calc(100% + 6px);
+      background: #1E1E1E;
+      color: #FFFFFF;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 400;
+      white-space: nowrap;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       opacity: 0;
-      transform: translateY(4px);
+      visibility: hidden;
+      transition: opacity 0.2s ease 0.5s, visibility 0.2s ease 0.5s;
+      pointer-events: none;
     }
 
-    to {
+    .slider-label-text::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      bottom: calc(100% + 2px);
+      border-width: 4px;
+      border-style: solid;
+      border-color: #1E1E1E transparent transparent transparent;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease 0.5s, visibility 0.2s ease 0.5s;
+    }
+
+    .slider-label-text:hover::after,
+    .slider-label-text:hover::before {
       opacity: 1;
+      visibility: visible;
+    }
+
+    .input-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .percent-input {
+      width: 48px;
+      height: 28px;
+      border: 1px solid #E5E5E5;
+      border-radius: 4px;
+      padding: 0 20px 0 8px;
+      font-size: 11px;
+      text-align: right;
+      font-family: inherit;
+      color: #1E1E1E;
+      background: #FFFFFF;
+      transition: all 0.15s ease;
+      outline: none;
+    }
+
+    .percent-input:hover {
+      border-color: #CCCCCC;
+    }
+
+    .percent-input:focus {
+      border-color: #18A0FB;
+      box-shadow: 0 0 0 1px #18A0FB;
+    }
+
+    .percent-symbol {
+      position: absolute;
+      right: 8px;
+      font-size: 11px;
+      color: #999999;
+      pointer-events: none;
+    }
+
+    .slider-wrapper {
+      position: relative;
+      width: 100%;
+      height: 20px;
+      margin: 8px 0 0 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .slider-track {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 50%;
+      height: 4px;
+      background: linear-gradient(90deg, #18A0FB 0%, #18A0FB 100%);
+      border-radius: 2px;
+      transform: translateY(-50%);
+      pointer-events: none;
+      z-index: 0;
+      transition: width 0.15s ease;
+    }
+
+    input[type="range"] {
+      --progress: 0%;
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 20px;
+      background: transparent;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      padding: 0;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(to right, rgba(24, 160, 251, 0.35) 0%, rgba(24, 160, 251, 0.35) var(--progress), #E5E5E5 var(--progress), #E5E5E5 100%);
+      border-radius: 2px;
+      cursor: pointer;
+      border: none;
+    }
+
+    input[type="range"]:hover::-webkit-slider-runnable-track {
+      background: linear-gradient(to right, rgba(13, 143, 232, 0.45) 0%, rgba(13, 143, 232, 0.45) var(--progress), #D9D9D9 var(--progress), #D9D9D9 100%);
+    }
+
+    input[type="range"]::-moz-range-track {
+      width: 100%;
+      height: 4px;
+      background: #E5E5E5;
+      border-radius: 2px;
+      cursor: pointer;
+      border: none;
+    }
+
+    input[type="range"]:hover::-moz-range-track {
+      background: #D9D9D9;
+    }
+
+    input[type="range"]::-moz-range-progress {
+      height: 4px;
+      background: rgba(24, 160, 251, 0.35);
+      border-radius: 2px;
+    }
+
+    input[type="range"]:hover::-moz-range-progress {
+      background: rgba(13, 143, 232, 0.45);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #FFFFFF;
+      border: 2px solid #18A0FB;
+      border-radius: 50%;
+      cursor: pointer;
+      margin-top: -6px;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      transform: scale(1.05);
+      background: #18A0FB;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: #FFFFFF;
+      border: 2px solid #18A0FB;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+    }
+
+    input[type="range"]::-moz-range-thumb:active {
+      transform: scale(1.05);
+      background: #18A0FB;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    .divider {
+      height: 1px;
+      background: #E5E5E5;
+      margin: 16px 0;
+    }
+
+    .option-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 500;
+      color: #333333;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s ease;
+    }
+
+    .option-label:hover {
+      color: #1E1E1E;
+    }
+
+    /* Custom checkbox */
+    .checkbox-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+
+    .checkbox-custom {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 16px;
+      height: 16px;
+      background: #FFFFFF;
+      border: 1.5px solid #CCCCCC;
+      border-radius: 3px;
+      transition: all 0.15s ease;
+      pointer-events: none;
+    }
+
+    .checkbox-wrapper:hover .checkbox-custom {
+      border-color: #999999;
+    }
+
+    .checkbox-wrapper input[type="checkbox"]:checked~.checkbox-custom {
+      background: #18A0FB;
+      border-color: #18A0FB;
+    }
+
+    .checkbox-custom::after {
+      content: '';
+      position: absolute;
+      display: none;
+      left: 4px;
+      top: 1px;
+      width: 4px;
+      height: 8px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .checkbox-wrapper input[type="checkbox"]:checked~.checkbox-custom::after {
+      display: block;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      background: #F0F0F0;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 600;
+      color: #666666;
+      cursor: help;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .tooltip:hover {
+      background: #E5E5E5;
+      color: #333333;
+      transform: scale(1.1);
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 220px;
+      max-width: calc(100vw - 32px);
+      background-color: #1E1E1E;
+      color: #FFFFFF;
+      text-align: left;
+      border-radius: 6px;
+      padding: 8px 10px;
+      position: fixed;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.2s ease 0.5s, visibility 0.2s ease 0.5s;
+      font-size: 11px;
+      line-height: 1.4;
+      font-weight: 400;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      pointer-events: none;
+    }
+
+    .tooltip .tooltiptext::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -4px;
+      border-width: 4px;
+      border-style: solid;
+      border-color: #1E1E1E transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    button.has-tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      transform: translateX(-50%);
+      background: #1E1E1E;
+      color: #FFFFFF;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 400;
+      white-space: nowrap;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease 0.5s, visibility 0.2s ease 0.5s;
+      pointer-events: none;
+    }
+
+    button.has-tooltip::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 4px);
+      transform: translateX(-50%);
+      border-width: 4px;
+      border-style: solid;
+      border-color: #1E1E1E transparent transparent transparent;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease 0.5s, visibility 0.2s ease 0.5s;
+    }
+
+    button.has-tooltip:hover::after,
+    button.has-tooltip:hover::before {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .button-container {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    button {
+      flex: 1;
+      height: 32px;
+      border: none;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      outline: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:not(.has-tooltip):not(.support-button)::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.4s ease, height 0.4s ease;
+    }
+
+    button:not(.has-tooltip):not(.support-button):active::before {
+      width: 200px;
+      height: 200px;
+    }
+
+    #cancel-btn {
+      background: #F5F5F5;
+      color: #333333;
+    }
+
+    #cancel-btn:hover {
+      background: #E5E5E5;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    #cancel-btn:active {
       transform: translateY(0);
-    }
-  }
-
-  .slider-group {
-    animation: fadeIn 0.3s ease forwards;
-  }
-
-  .slider-group:nth-child(2) {
-    animation-delay: 0.05s;
-  }
-
-  .slider-group:nth-child(3) {
-    animation-delay: 0.1s;
-  }
-
-  .slider-group:nth-child(4) {
-    animation-delay: 0.15s;
-  }
-
-  .footer {
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-secondary);
-    font-size: 10px;
-    color: var(--text-tertiary);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .footer a {
-    color: var(--accent-primary);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    position: relative;
-  }
-
-  .footer a:hover {
-    color: var(--accent-hover);
-    text-decoration: underline;
-  }
-
-
-
-  .footer a .link-tooltip {
-    visibility: hidden;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: calc(100% + 10px);
-    width: max-content;
-    background: var(--tooltip-bg);
-    color: var(--tooltip-text);
-    text-align: center;
-    border-radius: 6px;
-    padding: 8px 10px;
-    z-index: 99999;
-    opacity: 0;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-    transition-delay: 0s;
-    font-weight: 400;
-    font-size: 10px;
-    line-height: 1.4;
-    pointer-events: none;
-    white-space: nowrap;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-
-  .footer a .link-tooltip::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--tooltip-bg) transparent transparent transparent;
-  }
-
-  .footer a:hover .link-tooltip {
-    visibility: visible;
-    opacity: 1;
-    transition-delay: 0.8s;
-  }
-
-  .support-button {
-    position: absolute;
-    right: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    padding: 0;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-    overflow: visible;
-    transform: scale(0.833);
-    transform-origin: center;
-  }
-
-  .support-button:hover {
-    transform: scale(1);
-  }
-
-  .support-button svg {
-    width: 18px;
-    height: 18px;
-    fill: var(--text-tertiary);
-    transition: all 0.2s ease;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  .support-button .icon-default {
-    opacity: 1;
-    transition: opacity 0.2s ease;
-  }
-
-  .support-button .icon-hover {
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-
-  .support-button:hover {
-    background: var(--bg-hover);
-  }
-
-  .support-button:hover .icon-default {
-    opacity: 0;
-  }
-
-  .support-button:hover .icon-hover {
-    opacity: 1;
-  }
-
-  .support-button:hover svg {
-    fill: var(--accent-primary);
-  }
-
-  .support-button:active {
-    background: var(--bg-active);
-  }
-
-  .support-button .support-tooltip {
-    visibility: hidden;
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 10px);
-    width: max-content;
-    background: var(--tooltip-bg);
-    color: var(--tooltip-text);
-    text-align: center;
-    border-radius: 6px;
-    padding: 8px 10px;
-    z-index: 99999;
-    opacity: 0;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-    transition-delay: 0s;
-    font-weight: 400;
-    font-size: 10px;
-    line-height: 1.4;
-    pointer-events: none;
-    white-space: nowrap;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-
-  .support-button .support-tooltip::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    right: 10px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--tooltip-bg) transparent transparent transparent;
-  }
-
-  .support-button:hover .support-tooltip {
-    visibility: visible;
-    opacity: 1;
-    transition-delay: 0.8s;
-  }
-</style>
-
-<h2>HSL Color Adjustment</h2>
-
-<div class="slider-group">
-  <label for="hue">
-    <span class="label-text">Hue
-      <span class="label-tooltip">
-        Shifts the color around the color wheel. Positive values shift clockwise, negative values shift
-        counterclockwise.
-      </span>
-    </span>
-  </label>
-  <div class="slider-container">
-    <div class="slider-wrapper">
-      <div class="slider-track"></div>
-      <div class="slider-progress" id="hue-progress"></div>
-      <input type="range" id="hue" min="-180" max="180" value="0" step="1">
-    </div>
-    <input type="number" class="value-display" id="hue-value" value="0" min="-180" max="180" step="1">
-    <button class="reset-button" id="hue-reset" disabled>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path
-          d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
-      </svg>
-    </button>
-  </div>
-</div>
-
-<div class="slider-group">
-  <label for="saturation">
-    <span class="label-text">Saturation
-      <span class="label-tooltip">
-        Adjusts color intensity. Positive values make colors more vibrant, negative values make them more gray.
-      </span>
-    </span>
-  </label>
-  <div class="slider-container">
-    <div class="slider-wrapper">
-      <div class="slider-track"></div>
-      <div class="slider-progress" id="saturation-progress"></div>
-      <input type="range" id="saturation" min="-100" max="100" value="0" step="1">
-    </div>
-    <input type="number" class="value-display" id="saturation-value" value="0" min="-100" max="100" step="1">
-    <button class="reset-button" id="saturation-reset" disabled>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path
-          d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
-      </svg>
-    </button>
-  </div>
-</div>
-
-<div class="slider-group">
-  <label for="lightness">
-    <span class="label-text">Lightness
-      <span class="label-tooltip">
-        Adjusts brightness. Positive values make colors lighter, negative values make them darker.
-      </span>
-    </span>
-  </label>
-  <div class="slider-container">
-    <div class="slider-wrapper">
-      <div class="slider-track"></div>
-      <div class="slider-progress" id="lightness-progress"></div>
-      <input type="range" id="lightness" min="-100" max="100" value="0" step="1">
-    </div>
-    <input type="number" class="value-display" id="lightness-value" value="0" min="-100" max="100" step="1">
-    <button class="reset-button" id="lightness-reset" disabled>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path
-          d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
-      </svg>
-    </button>
-  </div>
-</div>
-
-<div class="preview-container">
-  <div class="preview-checkbox">
-    <input type="checkbox" id="preview-toggle" checked>
-    <label for="preview-toggle">Preview</label>
-  </div>
-</div>
-
-<div class="button-group">
-  <button id="cancel">Cancel</button>
-  <button id="apply">Apply</button>
-</div>
-
-<div class="footer">
-  <span>© 2025 <a href="https://samolevsky.com/" target="_blank">Samolevsky.com<span class="link-tooltip">Discover more
-        design tools</span></a></span>
-  <button class="support-button" id="supportButton">
-    <svg class="icon-default" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-      <path d="M16,2A14,14,0,1,0,30,16,14,14,0,0,0,16,2Zm0,26A12,12,0,1,1,28,16,12,12,0,0,1,16,28Z" />
-      <path d="M11.5,11A2.5,2.5,0,1,0,14,13.5,2.48,2.48,0,0,0,11.5,11Z" />
-      <path d="M20.5,11A2.5,2.5,0,1,0,23,13.5,2.48,2.48,0,0,0,20.5,11Z" />
-      <path d="M16,24a8,8,0,0,0,6.85-3.89l-1.71-1a6,6,0,0,1-10.28,0l-1.71,1A8,8,0,0,0,16,24Z" />
-    </svg>
-    <svg class="icon-hover" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-      <path d="M16,2A14,14,0,1,0,30,16,14,14,0,0,0,16,2Zm0,26A12,12,0,1,1,28,16,12,12,0,0,1,16,28Z" />
-      <path d="M20.5,11A2.5,2.5,0,1,0,23,13.5,2.5,2.5,0,0,0,20.5,11Z" />
-      <rect x="8" y="13" width="6" height="2" />
-      <path d="M16,24a8,8,0,0,0,6.85-3.89l-1.71-1a6,6,0,0,1-10.28,0l-1.71,1A8,8,0,0,0,16,24Z" />
-    </svg>
-    <span class="support-tooltip">Support plugin development</span>
-  </button>
-</div>
-
-<script>
-  const hueSlider = document.getElementById('hue');
-  const saturationSlider = document.getElementById('saturation');
-  const lightnessSlider = document.getElementById('lightness');
-
-  const hueValue = document.getElementById('hue-value');
-  const saturationValue = document.getElementById('saturation-value');
-  const lightnessValue = document.getElementById('lightness-value');
-
-  const hueProgress = document.getElementById('hue-progress');
-  const saturationProgress = document.getElementById('saturation-progress');
-  const lightnessProgress = document.getElementById('lightness-progress');
-
-  const hueReset = document.getElementById('hue-reset');
-  const saturationReset = document.getElementById('saturation-reset');
-  const lightnessReset = document.getElementById('lightness-reset');
-
-  const previewToggle = document.getElementById('preview-toggle');
-
-  function updateProgress(slider, progress, min, max) {
-    const value = parseFloat(slider.value);
-    const range = max - min;
-    const centerPercent = Math.abs(min) / range * 100;
-    const valuePercent = (value - min) / range * 100;
-
-    if (value >= 0) {
-      progress.style.left = centerPercent + '%';
-      progress.style.width = (valuePercent - centerPercent) + '%';
-    } else {
-      progress.style.left = valuePercent + '%';
-      progress.style.width = (centerPercent - valuePercent) + '%';
+      box-shadow: none;
     }
 
-    progress.style.opacity = value !== 0 ? '1' : '0';
-  }
+    #apply-btn {
+      background: #18A0FB;
+      color: #FFFFFF;
+    }
 
-  function updateResetButton(resetButton, value) {
-    resetButton.disabled = value === 0;
-  }
+    #apply-btn:hover {
+      background: #0D8FE8;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(24, 160, 251, 0.35);
+    }
 
-  function sendPreview() {
-    if (!previewToggle.checked) {
-      // If preview is off, reset to original colors
+    #apply-btn:active {
+      transform: translateY(0);
+      background: #0B7FD1;
+      box-shadow: none;
+    }
+
+    .randomize-btn {
+      flex: 1;
+      height: 26px;
+      background: #F5F5F5;
+      color: #333333;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .randomize-btn:hover:not(:disabled) {
+      background: #E5E5E5;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .randomize-btn:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .randomize-btn:disabled {
+      background: #F5F5F5;
+      color: #CCCCCC;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    body.dark-mode .randomize-btn {
+      background: #3C3C3C;
+      color: #CCCCCC;
+    }
+
+    body.dark-mode .randomize-btn:hover:not(:disabled) {
+      background: #4C4C4C;
+      color: #FFFFFF;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .randomize-btn:disabled {
+      background: #2C2C2C;
+      color: #666666;
+    }
+
+    .footer {
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid #E5E5E5;
+      text-align: center;
+      font-size: 10px;
+      color: #999999;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+
+    .support-button {
+      position: absolute;
+      right: 0;
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      min-height: 20px;
+      border-radius: 50%;
+      background: #F0F0F0;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: all 0.2s ease;
+      outline: none;
+      flex: none;
+      overflow: visible;
+    }
+
+    .support-button:hover {
+      transform: scale(1.15);
+      background: #E5E5E5;
+      box-shadow: none;
+    }
+
+    .support-button:active {
+      transform: scale(1.05);
+      box-shadow: none;
+    }
+
+    body.dark-mode .support-button {
+      background: #3C3C3C;
+    }
+
+    body.dark-mode .support-button:hover {
+      background: #4C4C4C;
+    }
+
+    .support-button svg {
+      width: 16px;
+      height: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .support-button:hover svg {
+      fill: #18A0FB;
+    }
+
+    .support-button svg path,
+    .support-button svg rect {
+      fill: #999999;
+      transition: fill 0.2s ease;
+    }
+
+    .support-button:hover svg path,
+    .support-button:hover svg rect {
+      fill: #18A0FB;
+    }
+
+    body.dark-mode .support-button svg path,
+    body.dark-mode .support-button svg rect {
+      fill: #7C7C7C;
+    }
+
+    body.dark-mode .support-button:hover svg path,
+    body.dark-mode .support-button:hover svg rect {
+      fill: #18A0FB;
+    }
+
+    .support-button[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 8px);
+      background: #1E1E1E;
+      color: #FFFFFF;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 400;
+      white-space: nowrap;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease 0.5s, visibility 0.2s ease 0.5s;
+      pointer-events: none;
+    }
+
+    .support-button[data-tooltip]::before {
+      content: '';
+      position: absolute;
+      right: 6px;
+      bottom: calc(100% + 4px);
+      border-width: 4px;
+      border-style: solid;
+      border-color: #1E1E1E transparent transparent transparent;
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease 0.5s, visibility 0.2s ease 0.5s;
+    }
+
+    .support-button[data-tooltip]:hover::after,
+    .support-button[data-tooltip]:hover::before {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    body.dark-mode .support-button[data-tooltip]::after {
+      background: #1E1E1E;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    body.dark-mode .support-button[data-tooltip]::before {
+      border-color: #1E1E1E transparent transparent transparent;
+    }
+
+    .footer a {
+      color: #18A0FB;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .footer a:hover {
+      color: #0D8FE8;
+      text-decoration: underline;
+    }
+
+    .footer a::after {
+      content: 'Discover more design tools';
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      transform: translateX(-50%);
+      background: #1E1E1E;
+      color: #FFFFFF;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 400;
+      white-space: nowrap;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease 0.8s, visibility 0.2s ease 0.8s;
+      pointer-events: none;
+    }
+
+    .footer a::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 4px);
+      transform: translateX(-50%);
+      border-width: 4px;
+      border-style: solid;
+      border-color: #1E1E1E transparent transparent transparent;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease 0.8s, visibility 0.2s ease 0.8s;
+    }
+
+    .footer a:hover::after,
+    .footer a:hover::before {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Smooth fade-in animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .slider-container {
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .slider-container:nth-child(1) {
+      animation-delay: 0.05s;
+    }
+
+    .slider-container:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .slider-container:nth-child(3) {
+      animation-delay: 0.15s;
+    }
+
+    .option-container {
+      animation: fadeIn 0.3s ease 0.2s forwards;
+      opacity: 0;
+    }
+
+    .button-container {
+      animation: fadeIn 0.3s ease 0.25s forwards;
+      opacity: 0;
+    }
+
+    .footer {
+      animation: fadeIn 0.3s ease 0.3s forwards;
+      opacity: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Opacity Randomizer</h2>
+
+  <div class="slider-container">
+    <div class="slider-label">
+      <span class="slider-label-text" data-tooltip="Lowest opacity value for randomization">Minimum Opacity</span>
+      <div class="input-container">
+        <input type="number" id="min-input" min="0" max="100" value="50" class="percent-input">
+        <span class="percent-symbol">%</span>
+      </div>
+    </div>
+    <div class="slider-wrapper">
+      <input type="range" id="min-opacity" min="0" max="100" value="50">
+    </div>
+  </div>
+
+  <div class="slider-container">
+    <div class="slider-label">
+      <span class="slider-label-text" data-tooltip="Highest opacity value for randomization">Maximum Opacity</span>
+      <div class="input-container">
+        <input type="number" id="max-input" min="0" max="100" value="100" class="percent-input">
+        <span class="percent-symbol">%</span>
+      </div>
+    </div>
+    <div class="slider-wrapper">
+      <input type="range" id="max-opacity" min="0" max="100" value="100">
+    </div>
+  </div>
+
+  <div class="slider-container">
+    <div class="slider-label">
+      <span class="slider-label-text" data-tooltip="Increment between possible opacity values">Opacity Step</span>
+      <div class="input-container">
+        <input type="number" id="step-input" min="1" max="100" value="1" class="percent-input">
+      </div>
+    </div>
+    <div class="slider-wrapper">
+      <input type="range" id="opacity-step" min="1" max="100" value="1">
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="option-container" style="margin-bottom: 8px; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <label for="preview-mode" class="option-label">
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="preview-mode" checked>
+          <span class="checkbox-custom"></span>
+        </div>
+        <span>Live Preview</span>
+      </label>
+      <div class="tooltip" id="preview-tooltip">?
+        <span class="tooltiptext">When enabled, shows real-time preview of opacity changes. Disable to see original
+          values.</span>
+      </div>
+    </div>
+    <button id="randomize-btn" class="randomize-btn has-tooltip"
+      data-tooltip="Apply new random values">Randomize</button>
+  </div>
+
+  <div class="option-container">
+    <label for="deep-randomize" class="option-label">
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="deep-randomize">
+        <span class="checkbox-custom"></span>
+      </div>
+      <span>Randomize children in groups/frames</span>
+    </label>
+    <div class="tooltip" id="deep-tooltip">?
+      <span class="tooltiptext">When enabled, applies randomization to individual elements within groups and frames
+        instead of the parent container.</span>
+    </div>
+  </div>
+
+  <div class="button-container">
+    <button id="cancel-btn" class="has-tooltip" data-tooltip="Revert to original values">Cancel</button>
+    <button id="apply-btn" class="has-tooltip" data-tooltip="Apply randomization and close">Apply</button>
+  </div>
+
+  <div class="footer">
+    <span>© 2025 <a href="https://samolevsky.com/" target="_blank">Samolevsky.com</a></span>
+    <button class="support-button" id="support-btn" data-tooltip="Support plugin development">
+      <svg id="support-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+        <path d="M16,2A14,14,0,1,0,30,16,14,14,0,0,0,16,2Zm0,26A12,12,0,1,1,28,16,12,12,0,0,1,16,28Z" />
+        <path d="M11.5,11A2.5,2.5,0,1,0,14,13.5,2.48,2.48,0,0,0,11.5,11Z" />
+        <path d="M20.5,11A2.5,2.5,0,1,0,23,13.5,2.48,2.48,0,0,0,20.5,11Z" />
+        <path d="M16,24a8,8,0,0,0,6.85-3.89l-1.71-1a6,6,0,0,1-10.28,0l-1.71,1A8,8,0,0,0,16,24Z" />
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    // Detect and apply Figma theme
+    function applyTheme() {
+      // Check if dark mode is enabled in Figma
+      const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (isDark) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
+    }
+
+    // Apply theme on load
+    applyTheme();
+
+    // Listen for theme changes
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+    }
+
+    // Initialize values
+    let minOpacity = 50;
+    let maxOpacity = 100;
+    let opacityStep = 1;
+    let deepRandomize = false;
+    let previewMode = true;
+
+    // Get elements
+    const minSlider = document.getElementById('min-opacity');
+    const maxSlider = document.getElementById('max-opacity');
+    const stepSlider = document.getElementById('opacity-step');
+    const minInput = document.getElementById('min-input');
+    const maxInput = document.getElementById('max-input');
+    const stepInput = document.getElementById('step-input');
+    const deepRandomizeCheckbox = document.getElementById('deep-randomize');
+    const previewModeCheckbox = document.getElementById('preview-mode');
+    const applyBtn = document.getElementById('apply-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const randomizeBtn = document.getElementById('randomize-btn');
+
+
+    // Function to update slider track progress
+    function updateSliderTrack(slider) {
+      const value = slider.value;
+      const min = slider.min;
+      const max = slider.max;
+      const percentage = ((value - min) / (max - min)) * 100;
+      slider.style.setProperty('--progress', percentage + '%');
+    }
+
+    // Function to send preview update to plugin
+    function updatePreview() {
+      if (previewMode) {
+        parent.postMessage({
+          pluginMessage: {
+            type: 'preview-opacity',
+            minOpacity,
+            maxOpacity,
+            step: opacityStep,
+            deepRandomize
+          }
+        }, '*');
+      } else {
+        parent.postMessage({
+          pluginMessage: {
+            type: 'restore-original'
+          }
+        }, '*');
+      }
+    }
+
+    // Update displays and trigger preview
+    function updateValues() {
+      // Update input fields
+      minInput.value = minOpacity;
+      maxInput.value = maxOpacity;
+      stepInput.value = opacityStep;
+
+      // Ensure slider values match the opacity values
+      if (minOpacity !== parseInt(minSlider.value)) {
+        minSlider.value = minOpacity;
+      }
+
+      if (maxOpacity !== parseInt(maxSlider.value)) {
+        maxSlider.value = maxOpacity;
+      }
+
+      if (opacityStep !== parseInt(stepSlider.value)) {
+        stepSlider.value = opacityStep;
+      }
+
+      // Update slider tracks
+      updateSliderTrack(minSlider);
+      updateSliderTrack(maxSlider);
+      updateSliderTrack(stepSlider);
+
+      // Update live preview
+      updatePreview();
+    }
+
+    // Event listeners for sliders
+    minSlider.addEventListener('input', () => {
+      minOpacity = parseInt(minSlider.value);
+
+      // If min reaches or exceeds max, automatically move max slider to match
+      if (minOpacity >= maxOpacity) {
+        maxOpacity = minOpacity;
+        maxSlider.value = maxOpacity;
+      }
+
+      updateValues();
+    });
+
+    maxSlider.addEventListener('input', () => {
+      maxOpacity = parseInt(maxSlider.value);
+
+      // If max reaches or falls below min, automatically move min slider to match
+      if (maxOpacity <= minOpacity) {
+        minOpacity = maxOpacity;
+        minSlider.value = minOpacity;
+      }
+
+      updateValues();
+    });
+
+    // Event listener for step slider
+    stepSlider.addEventListener('input', () => {
+      opacityStep = parseInt(stepSlider.value);
+      updateValues();
+    });
+
+    // Right-click reset functionality for sliders
+    minSlider.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      minOpacity = 0;
+      updateValues();
+    });
+
+    maxSlider.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      maxOpacity = 100;
+      updateValues();
+    });
+
+    stepSlider.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      opacityStep = 1;
+      updateValues();
+    });
+
+    // Event listeners for input fields
+    minInput.addEventListener('change', () => {
+      // Ensure value is within range
+      let value = parseInt(minInput.value);
+      value = Math.max(0, Math.min(100, value));
+      minOpacity = value;
+
+      // If min reaches or exceeds max, automatically adjust max to match
+      if (minOpacity >= maxOpacity) {
+        maxOpacity = minOpacity;
+      }
+
+      updateValues();
+    });
+
+    maxInput.addEventListener('change', () => {
+      // Ensure value is within range
+      let value = parseInt(maxInput.value);
+      value = Math.max(0, Math.min(100, value));
+      maxOpacity = value;
+
+      // If max reaches or falls below min, automatically adjust min to match
+      if (maxOpacity <= minOpacity) {
+        minOpacity = maxOpacity;
+      }
+
+      updateValues();
+    });
+
+    stepInput.addEventListener('change', () => {
+      // Ensure value is within range
+      let value = parseInt(stepInput.value);
+      value = Math.max(1, Math.min(100, value));
+      opacityStep = value;
+
+      updateValues();
+    });
+
+    // Prevent non-numeric input
+    minInput.addEventListener('input', () => {
+      minInput.value = minInput.value.replace(/[^0-9]/g, '');
+    });
+
+    maxInput.addEventListener('input', () => {
+      maxInput.value = maxInput.value.replace(/[^0-9]/g, '');
+    });
+
+    stepInput.addEventListener('input', () => {
+      stepInput.value = stepInput.value.replace(/[^0-9]/g, '');
+    });
+
+    // Keyboard event handlers for Shift + Arrow keys (10-step increment)
+    minInput.addEventListener('keydown', (e) => {
+      if (e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        e.preventDefault();
+        let value = parseInt(minInput.value) || 0;
+        value = e.key === 'ArrowUp' ? value + 10 : value - 10;
+        value = Math.max(0, Math.min(100, value));
+        minOpacity = value;
+
+        if (minOpacity >= maxOpacity) {
+          maxOpacity = minOpacity;
+        }
+
+        updateValues();
+      }
+    });
+
+    maxInput.addEventListener('keydown', (e) => {
+      if (e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        e.preventDefault();
+        let value = parseInt(maxInput.value) || 0;
+        value = e.key === 'ArrowUp' ? value + 10 : value - 10;
+        value = Math.max(0, Math.min(100, value));
+        maxOpacity = value;
+
+        if (maxOpacity <= minOpacity) {
+          minOpacity = maxOpacity;
+        }
+
+        updateValues();
+      }
+    });
+
+    stepInput.addEventListener('keydown', (e) => {
+      if (e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        e.preventDefault();
+        let value = parseInt(stepInput.value) || 1;
+        value = e.key === 'ArrowUp' ? value + 10 : value - 10;
+        value = Math.max(1, Math.min(100, value));
+        opacityStep = value;
+
+        updateValues();
+      }
+    });
+
+    // Event listeners for checkboxes
+    deepRandomizeCheckbox.addEventListener('change', () => {
+      deepRandomize = deepRandomizeCheckbox.checked;
+      updatePreview();
+    });
+
+    previewModeCheckbox.addEventListener('change', () => {
+      previewMode = previewModeCheckbox.checked;
+      randomizeBtn.disabled = !previewMode;
+      updatePreview();
+    });
+
+    // Send message to plugin code
+    applyBtn.addEventListener('click', () => {
       parent.postMessage({
         pluginMessage: {
-          type: 'preview',
-          hue: 0,
-          saturation: 0,
-          lightness: 0
+          type: 'apply-opacity',
+          minOpacity,
+          maxOpacity,
+          step: opacityStep,
+          deepRandomize
         }
       }, '*');
-      return;
-    }
+    });
 
-    const hue = parseInt(hueSlider.value, 10);
-    const saturation = parseInt(saturationSlider.value, 10);
-    const lightness = parseInt(lightnessSlider.value, 10);
+    cancelBtn.addEventListener('click', () => {
+      parent.postMessage({
+        pluginMessage: {
+          type: 'cancel',
+          deepRandomize: deepRandomize
+        }
+      }, '*');
+    });
 
-    parent.postMessage({
-      pluginMessage: {
-        type: 'preview',
-        hue,
-        saturation,
-        lightness
+    randomizeBtn.addEventListener('click', () => {
+      if (previewMode) {
+        parent.postMessage({
+          pluginMessage: {
+            type: 'randomize',
+            minOpacity,
+            maxOpacity,
+            step: opacityStep,
+            deepRandomize
+          }
+        }, '*');
       }
-    }, '*');
-  }
+    });
 
-  // Handle preview toggle
-  previewToggle.onchange = () => {
-    sendPreview();
-  };
+    // Listen for messages from the plugin
+    window.onmessage = (event) => {
+      const message = event.data.pluginMessage;
+      if (message && message.type === 'selection-changed') {
+        // Update selection count indicator if needed
+        console.log(`Selection changed: ${message.count} objects selected`);
 
-  hueSlider.oninput = () => {
-    hueValue.value = hueSlider.value;
-    updateProgress(hueSlider, hueProgress, -180, 180);
-    updateResetButton(hueReset, parseInt(hueSlider.value, 10));
-    sendPreview();
-  };
-
-  saturationSlider.oninput = () => {
-    saturationValue.value = saturationSlider.value;
-    updateProgress(saturationSlider, saturationProgress, -100, 100);
-    updateResetButton(saturationReset, parseInt(saturationSlider.value, 10));
-    sendPreview();
-  };
-
-  lightnessSlider.oninput = () => {
-    lightnessValue.value = lightnessSlider.value;
-    updateProgress(lightnessSlider, lightnessProgress, -100, 100);
-    updateResetButton(lightnessReset, parseInt(lightnessSlider.value, 10));
-    sendPreview();
-  };
-
-  hueValue.oninput = () => {
-    let val = parseInt(hueValue.value, 10);
-    if (isNaN(val)) val = 0;
-    val = Math.max(-180, Math.min(180, val));
-    hueSlider.value = val.toString();
-    hueValue.value = val.toString();
-    updateProgress(hueSlider, hueProgress, -180, 180);
-    updateResetButton(hueReset, val);
-    sendPreview();
-  };
-
-  saturationValue.oninput = () => {
-    let val = parseInt(saturationValue.value, 10);
-    if (isNaN(val)) val = 0;
-    val = Math.max(-100, Math.min(100, val));
-    saturationSlider.value = val.toString();
-    saturationValue.value = val.toString();
-    updateProgress(saturationSlider, saturationProgress, -100, 100);
-    updateResetButton(saturationReset, val);
-    sendPreview();
-  };
-
-  lightnessValue.oninput = () => {
-    let val = parseInt(lightnessValue.value, 10);
-    if (isNaN(val)) val = 0;
-    val = Math.max(-100, Math.min(100, val));
-    lightnessSlider.value = val.toString();
-    lightnessValue.value = val.toString();
-    updateProgress(lightnessSlider, lightnessProgress, -100, 100);
-    updateResetButton(lightnessReset, val);
-    sendPreview();
-  };
-
-  document.getElementById('apply').onclick = () => {
-    const hue = parseInt(hueSlider.value, 10);
-    const saturation = parseInt(saturationSlider.value, 10);
-    const lightness = parseInt(lightnessSlider.value, 10);
-
-    parent.postMessage({
-      pluginMessage: {
-        type: 'apply',
-        hue,
-        saturation,
-        lightness
+        // Update preview with latest settings
+        parent.postMessage({
+          pluginMessage: {
+            type: 'selection-changed',
+            minOpacity,
+            maxOpacity,
+            step: opacityStep,
+            deepRandomize
+          }
+        }, '*');
       }
-    }, '*');
-  };
+    };
 
-  document.getElementById('cancel').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
-  };
+    // Support button functionality
+    const supportBtn = document.getElementById('support-btn');
+    const supportIcon = document.getElementById('support-icon');
 
-  document.getElementById('supportButton').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'open-support' } }, '*');
-  };
+    // SVG paths for the two icons
+    const icon1Paths = `<path d="M16,2A14,14,0,1,0,30,16,14,14,0,0,0,16,2Zm0,26A12,12,0,1,1,28,16,12,12,0,0,1,16,28Z"/>
+        <path d="M11.5,11A2.5,2.5,0,1,0,14,13.5,2.48,2.48,0,0,0,11.5,11Z"/>
+        <path d="M20.5,11A2.5,2.5,0,1,0,23,13.5,2.48,2.48,0,0,0,20.5,11Z"/>
+        <path d="M16,24a8,8,0,0,0,6.85-3.89l-1.71-1a6,6,0,0,1-10.28,0l-1.71,1A8,8,0,0,0,16,24Z"/>`;
 
-  // Reset button handlers
-  hueReset.onclick = () => {
-    hueSlider.value = '0';
-    hueValue.value = '0';
-    updateProgress(hueSlider, hueProgress, -180, 180);
-    updateResetButton(hueReset, 0);
-    sendPreview();
-  };
+    const icon2Paths = `<path d="M16,2A14,14,0,1,0,30,16,14,14,0,0,0,16,2Zm0,26A12,12,0,1,1,28,16,12,12,0,0,1,16,28Z"/>
+        <path d="M20.5,11A2.5,2.5,0,1,0,23,13.5,2.5,2.5,0,0,0,20.5,11Z"/>
+        <rect x="8" y="13" width="6" height="2"/>
+        <path d="M16,24a8,8,0,0,0,6.85-3.89l-1.71-1a6,6,0,0,1-10.28,0l-1.71,1A8,8,0,0,0,16,24Z"/>`;
 
-  saturationReset.onclick = () => {
-    saturationSlider.value = '0';
-    saturationValue.value = '0';
-    updateProgress(saturationSlider, saturationProgress, -100, 100);
-    updateResetButton(saturationReset, 0);
-    sendPreview();
-  };
+    supportBtn.addEventListener('mouseenter', () => {
+      supportIcon.innerHTML = icon2Paths;
+    });
 
-  lightnessReset.onclick = () => {
-    lightnessSlider.value = '0';
-    lightnessValue.value = '0';
-    updateProgress(lightnessSlider, lightnessProgress, -100, 100);
-    updateResetButton(lightnessReset, 0);
-    sendPreview();
-  };
+    supportBtn.addEventListener('mouseleave', () => {
+      supportIcon.innerHTML = icon1Paths;
+    });
 
-  // Right-click to reset sliders to 0
-  hueSlider.oncontextmenu = (e) => {
-    e.preventDefault();
-    hueSlider.value = '0';
-    hueValue.value = '0';
-    updateProgress(hueSlider, hueProgress, -180, 180);
-    updateResetButton(hueReset, 0);
-    sendPreview();
-  };
+    supportBtn.addEventListener('click', () => {
+      parent.postMessage({
+        pluginMessage: {
+          type: 'open-url',
+          url: 'https://www.patreon.com/c/samolevsky'
+        }
+      }, '*');
+    });
 
-  saturationSlider.oncontextmenu = (e) => {
-    e.preventDefault();
-    saturationSlider.value = '0';
-    saturationValue.value = '0';
-    updateProgress(saturationSlider, saturationProgress, -100, 100);
-    updateResetButton(saturationReset, 0);
-    sendPreview();
-  };
+    // Initialize preview and tracks on load
+    updateValues();
 
-  lightnessSlider.oncontextmenu = (e) => {
-    e.preventDefault();
-    lightnessSlider.value = '0';
-    lightnessValue.value = '0';
-    updateProgress(lightnessSlider, lightnessProgress, -100, 100);
-    updateResetButton(lightnessReset, 0);
-    sendPreview();
-  };
+    // Position tooltips dynamically to avoid cropping
+    document.querySelectorAll('.tooltip').forEach(tooltip => {
+      tooltip.addEventListener('mouseenter', function (e) {
+        const tooltipText = this.querySelector('.tooltiptext');
+        if (tooltipText) {
+          const rect = this.getBoundingClientRect();
+          const tooltipRect = tooltipText.getBoundingClientRect();
 
-  // Initialize progress bars
-  updateProgress(hueSlider, hueProgress, -180, 180);
-  updateProgress(saturationSlider, saturationProgress, -100, 100);
-  updateProgress(lightnessSlider, lightnessProgress, -100, 100);
+          // Position tooltip above the icon
+          tooltipText.style.bottom = (rect.height + 8) + 'px';
+          tooltipText.style.left = 'auto';
+          tooltipText.style.right = 'auto';
+          tooltipText.style.transform = 'translateX(-50%)';
+          tooltipText.style.marginLeft = '0';
 
-  // Initialize
-  parent.postMessage({ pluginMessage: { type: 'init' } }, '*');
-</script>
+          // Check if tooltip would overflow on the right
+          if (rect.left + tooltipRect.width / 2 > window.innerWidth) {
+            tooltipText.style.left = 'auto';
+            tooltipText.style.right = '0';
+            tooltipText.style.transform = 'none';
+          }
+          // Check if tooltip would overflow on the left
+          else if (rect.left - tooltipRect.width / 2 < 0) {
+            tooltipText.style.left = '0';
+            tooltipText.style.right = 'auto';
+            tooltipText.style.transform = 'none';
+          }
+          else {
+            tooltipText.style.left = '50%';
+            tooltipText.style.transform = 'translateX(-50%)';
+          }
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
